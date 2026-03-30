@@ -13,7 +13,6 @@
 :root {
   --primary-dark: #7b3fa0;
   --primary-mid:  #9b59b6;
-  --primary-light:#c39bd3;
   --pale:         #f5eefb;
   --white:        #ffffff;
   --gray-1:       #faf6fd;
@@ -29,69 +28,46 @@ body { font-family: 'Lato', sans-serif; background: var(--gray-1); overflow-x: h
 /* TOPBAR */
 .topbar {
   background: linear-gradient(90deg, var(--primary-dark), var(--primary-mid));
-  color: white;
-  display: flex; align-items: center;
+  color: white; display: flex; align-items: center;
   padding: 0 24px; height: 54px; gap: 16px;
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
 }
 .brand { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 17px; margin-right: auto; }
 .role-badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
-.btn-logout { background: #c0392b; border: none; padding: 7px 14px; color: white; cursor: pointer; border-radius: 6px; font-size: 13px; }
+.btn-logout { background: #c0392b; border: none; padding: 7px 14px; color: white; cursor: pointer; border-radius: 6px; font-size: 13px; transition: background 0.2s; }
+.btn-logout:hover { background: #a93226; }
+
+/* DB STATUS */
+.db-status { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.9; }
+.db-dot { width: 8px; height: 8px; border-radius: 50%; background: #f39c12; transition: background 0.4s; }
+.db-dot.connected { background: #2ecc71; }
+.db-dot.disconnected { background: #e74c3c; }
 
 /* SIDEBAR */
 .sidebar {
   width: var(--sidebar-w);
   background: linear-gradient(180deg, #4a1a6b, #7b3fa0);
-  color: white;
-  padding: 0 10px 20px;
+  color: white; padding: 0 10px 20px;
   position: fixed; top: 54px; left: 0;
   height: calc(100vh - 54px); overflow-y: auto;
 }
-
-.recept-box {
-  text-align: center;
-  padding: 24px 0 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 14px;
-}
-
-.rec-avatar {
-  width: 64px; height: 64px;
-  background: rgba(255,255,255,0.18);
-  border-radius: 50%;
-  margin: 0 auto 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  border: 2px solid rgba(255,255,255,0.3);
-}
-
+.recept-box { text-align: center; padding: 24px 0 18px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 14px; }
+.rec-avatar { width: 64px; height: 64px; background: rgba(255,255,255,0.18); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 2px solid rgba(255,255,255,0.3); }
 .section-label { font-size: 10px; color: rgba(255,255,255,0.5); margin: 14px 4px 6px; letter-spacing: 1.5px; font-weight: 700; }
-
-.nav-item {
-  padding: 11px 14px; border-radius: 8px; cursor: pointer;
-  display: flex; align-items: center; gap: 12px;
-  font-size: 14px; transition: background 0.2s; margin-bottom: 2px;
-}
+.nav-item { padding: 11px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: background 0.2s; margin-bottom: 2px; }
 .nav-item:hover { background: rgba(255,255,255,0.12); }
 .nav-item.active { background: rgba(255,255,255,0.22); font-weight: 700; }
 .nav-item i { width: 18px; text-align: center; opacity: 0.85; }
 
 /* MAIN */
 .main { margin-left: var(--sidebar-w); margin-top: 54px; padding: 26px; min-height: calc(100vh - 54px); }
-
 .page-section { display: none; }
 .page-section.active { display: block; }
-
 .page-title { font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; }
 
 /* STAT CARDS */
 .stat-row { display: flex; gap: 14px; flex-wrap: wrap; }
-.stat-card {
-  flex: 1; min-width: 150px;
-  background: linear-gradient(135deg, var(--primary-mid), var(--primary-dark));
-  color: white; padding: 20px; border-radius: 14px;
-  display: flex; align-items: center; gap: 14px;
-}
+.stat-card { flex: 1; min-width: 150px; background: linear-gradient(135deg, var(--primary-mid), var(--primary-dark)); color: white; padding: 20px; border-radius: 14px; display: flex; align-items: center; gap: 14px; }
 .stat-card.teal   { background: linear-gradient(135deg, #1abc9c, #0d6b4e); }
 .stat-card.orange { background: linear-gradient(135deg, #e67e22, #c0392b); }
 .stat-card.blue   { background: linear-gradient(135deg, #2980b9, #1a5fa8); }
@@ -106,9 +82,8 @@ body { font-family: 'Lato', sans-serif; background: var(--gray-1); overflow-x: h
 /* TABLE */
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 10px; text-align: left; border-bottom: 1px solid #f0e8f8; font-size: 13px; }
-th { background: var(--pale); font-weight: 700; color: var(--primary-dark); font-size: 12px; letter-spacing: 0.3px; }
+th { background: var(--pale); font-weight: 700; color: var(--primary-dark); font-size: 12px; }
 tr:hover td { background: #faf0ff; }
-
 .table-buttons { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
 .table-buttons button { padding: 7px 14px; border: none; border-radius: 6px; background: var(--primary-mid); color: white; cursor: pointer; font-size: 13px; transition: 0.2s; }
 .table-buttons button:hover { background: var(--primary-dark); }
@@ -120,7 +95,13 @@ tr:hover td { background: #faf0ff; }
 .badge-paid     { background: #d1f0db; color: #155724; }
 .badge-unpaid   { background: #f8d7da; color: #721c24; }
 .badge-active   { background: #cce5ff; color: #004085; }
-.badge-inactive { background: #e2e3e5; color: #383d41; }
+.badge-stable   { background: #cce5ff; color: #004085; }
+.badge-critical { background: #f8d7da; color: #721c24; }
+
+/* ACTION BUTTONS */
+.btn-action { padding: 4px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: 700; margin-right: 4px; }
+.btn-done   { background: #d1f0db; color: #155724; }
+.btn-delete { background: #f8d7da; color: #721c24; }
 
 /* MODAL */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
@@ -136,24 +117,29 @@ tr:hover td { background: #faf0ff; }
 
 /* PAYMENT SUMMARY */
 .pay-summary { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
-.pay-card { flex: 1; min-width: 130px; background: white; border: 1px solid var(--gray-2); padding: 16px; border-radius: 12px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.pay-card { flex: 1; min-width: 130px; background: white; border: 1px solid var(--gray-2); padding: 16px; border-radius: 12px; text-align: center; }
 .pay-card .amount { font-size: 22px; font-weight: 800; color: var(--primary-dark); }
 .pay-card .lbl { font-size: 11px; color: #888; margin-top: 4px; }
 
-/* SETTINGS */
-.settings-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 580px; }
-.settings-form label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px; }
-.settings-form input, .settings-form select { width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 7px; font-size: 14px; }
-.settings-form .full { grid-column: 1 / -1; }
-.btn-primary { background: var(--primary-mid); color: white; border: none; padding: 10px 24px; border-radius: 7px; cursor: pointer; font-size: 14px; margin-top: 10px; }
-.btn-primary:hover { background: var(--primary-dark); }
-
-/* WALK-IN CARD */
+/* WALK-IN CARDS */
 .walkin-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
 .walkin-card { flex: 1; min-width: 220px; background: var(--pale); border-radius: 12px; padding: 16px; border-left: 4px solid var(--primary-mid); }
 .walkin-card .wtime { font-size: 12px; color: var(--gray-3); }
 .walkin-card .wname { font-size: 15px; font-weight: 700; margin: 4px 0 2px; }
 .walkin-card .wdoc  { font-size: 12px; color: #666; }
+
+/* SETTINGS */
+.settings-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 580px; }
+.settings-form label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px; }
+.settings-form input { width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 7px; font-size: 14px; }
+.settings-form .full { grid-column: 1 / -1; }
+.btn-primary { background: var(--primary-mid); color: white; border: none; padding: 10px 24px; border-radius: 7px; cursor: pointer; font-size: 14px; margin-top: 10px; }
+.btn-primary:hover { background: var(--primary-dark); }
+
+/* TOAST */
+#toast { position: fixed; bottom: 28px; right: 28px; background: #7b3fa0; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.2); display: none; z-index: 9999; }
+#toast.error-toast { background: #c0392b; }
+.loading-row td { text-align: center; color: #999; font-style: italic; padding: 20px; }
 </style>
 </head>
 <body>
@@ -162,9 +148,13 @@ tr:hover td { background: #faf0ff; }
 <div class="topbar">
   <div class="brand">🏥 Hospital Management</div>
   <div id="clock" style="font-size:13px;opacity:0.8;"></div>
+  <div class="db-status">
+    <div class="db-dot" id="dbDot"></div>
+    <span id="dbLabel">Checking DB...</span>
+  </div>
   <span class="role-badge">RECEPTIONIST</span>
   <span style="font-size:13px;">Hello, <strong id="userDisplay"></strong></span>
-  <button class="btn-logout" onclick="logout()">Logout</button>
+  <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
 </div>
 
 <!-- SIDEBAR -->
@@ -176,68 +166,37 @@ tr:hover td { background: #faf0ff; }
   </div>
 
   <p class="section-label">MAIN</p>
-
-  <div class="nav-item active" onclick="navigate(this,'dashboard')">
-    <i class="fas fa-th-large"></i> Dashboard
-  </div>
-  <div class="nav-item" onclick="navigate(this,'appointments')">
-    <i class="fas fa-calendar-alt"></i> Appointments
-  </div>
-  <div class="nav-item" onclick="navigate(this,'patients')">
-    <i class="fas fa-users"></i> Patients
-  </div>
-  <div class="nav-item" onclick="navigate(this,'walkin')">
-    <i class="fas fa-walking"></i> Walk-ins
-  </div>
-  <div class="nav-item" onclick="navigate(this,'payments')">
-    <i class="fas fa-credit-card"></i> Payments
-  </div>
+  <div class="nav-item active" onclick="navigate(this,'dashboard')"><i class="fas fa-th-large"></i> Dashboard</div>
+  <div class="nav-item" onclick="navigate(this,'appointments')"><i class="fas fa-calendar-alt"></i> Appointments</div>
+  <div class="nav-item" onclick="navigate(this,'patients')"><i class="fas fa-users"></i> Patients</div>
+  <div class="nav-item" onclick="navigate(this,'walkin')"><i class="fas fa-walking"></i> Walk-ins</div>
+  <div class="nav-item" onclick="navigate(this,'payments')"><i class="fas fa-credit-card"></i> Payments</div>
 
   <p class="section-label">ACCOUNT</p>
-
-  <div class="nav-item" onclick="navigate(this,'settings')">
-    <i class="fas fa-user-cog"></i> Profile Settings
-  </div>
+  <div class="nav-item" onclick="navigate(this,'settings')"><i class="fas fa-user-cog"></i> Profile Settings</div>
 </div>
 
 <!-- MAIN CONTENT -->
 <div class="main">
 
-  <!-- ===== DASHBOARD ===== -->
+  <!-- DASHBOARD -->
   <div id="page-dashboard" class="page-section active">
     <div class="page-title">Receptionist Dashboard</div>
     <div class="stat-row">
-      <div class="stat-card">
-        <i class="fas fa-calendar-check"></i>
-        <div><p>Today's Appointments</p><h2>5</h2></div>
-      </div>
-      <div class="stat-card teal">
-        <i class="fas fa-users"></i>
-        <div><p>Registered Patients</p><h2>4</h2></div>
-      </div>
-      <div class="stat-card orange">
-        <i class="fas fa-walking"></i>
-        <div><p>Walk-ins Today</p><h2>2</h2></div>
-      </div>
-      <div class="stat-card blue">
-        <i class="fas fa-money-bill-wave"></i>
-        <div><p>Payments Today</p><h2>GHS 850</h2></div>
-      </div>
+      <div class="stat-card"><i class="fas fa-calendar-check"></i><div><p>Today's Appointments</p><h2 id="statTodayAppts">—</h2></div></div>
+      <div class="stat-card teal"><i class="fas fa-users"></i><div><p>Registered Patients</p><h2 id="statPatients">—</h2></div></div>
+      <div class="stat-card orange"><i class="fas fa-walking"></i><div><p>Walk-ins Today</p><h2 id="statWalkins">—</h2></div></div>
+      <div class="stat-card blue"><i class="fas fa-money-bill-wave"></i><div><p>Payments Today</p><h2 id="statPayments">GHS 0</h2></div></div>
     </div>
 
     <div style="display:flex;gap:20px;flex-wrap:wrap;">
       <div class="panel" style="flex:1;min-width:280px;">
         <h3>Today's Appointments</h3>
         <table>
-          <tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr>
-          <tr><td>09:00 AM</td><td>Alice Mensah</td><td>Dr. Smith</td><td><span class="badge badge-done">Done</span></td></tr>
-          <tr><td>10:30 AM</td><td>Bob Asante</td><td>Dr. Smith</td><td><span class="badge badge-done">Done</span></td></tr>
-          <tr><td>12:00 PM</td><td>Charlie Osei</td><td>Dr. Mensah</td><td><span class="badge badge-pending">Pending</span></td></tr>
-          <tr><td>02:00 PM</td><td>Eve Darko</td><td>Dr. Smith</td><td><span class="badge badge-pending">Pending</span></td></tr>
-          <tr><td>03:30 PM</td><td>Walk-in</td><td>Dr. Mensah</td><td><span class="badge badge-pending">Pending</span></td></tr>
+          <thead><tr><th>Time</th><th>Patient</th><th>Reason</th><th>Status</th></tr></thead>
+          <tbody id="dashApptBody"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
         </table>
       </div>
-
       <div class="panel" style="flex:1;min-width:240px;">
         <h3>Appointment Status</h3>
         <canvas id="dashChart" height="180"></canvas>
@@ -245,7 +204,7 @@ tr:hover td { background: #faf0ff; }
     </div>
   </div>
 
-  <!-- ===== APPOINTMENTS ===== -->
+  <!-- APPOINTMENTS -->
   <div id="page-appointments" class="page-section">
     <div class="page-title">Appointments</div>
     <div class="table-buttons" style="margin-bottom:14px;">
@@ -253,11 +212,8 @@ tr:hover td { background: #faf0ff; }
     </div>
     <div class="panel">
       <table id="apptTable">
-        <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr>
-        <tr><td>1</td><td>Alice Mensah</td><td>Dr. Smith</td><td>2026-03-29</td><td>09:00 AM</td><td><span class="badge badge-done">Done</span></td></tr>
-        <tr><td>2</td><td>Bob Asante</td><td>Dr. Smith</td><td>2026-03-29</td><td>10:30 AM</td><td><span class="badge badge-done">Done</span></td></tr>
-        <tr><td>3</td><td>Charlie Osei</td><td>Dr. Mensah</td><td>2026-03-29</td><td>12:00 PM</td><td><span class="badge badge-pending">Pending</span></td></tr>
-        <tr><td>4</td><td>Eve Darko</td><td>Dr. Smith</td><td>2026-03-29</td><td>02:00 PM</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        <thead><tr><th>#</th><th>Patient</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="apptBody"><tr class="loading-row"><td colspan="7">Loading appointments...</td></tr></tbody>
       </table>
       <div class="table-buttons">
         <button onclick="printTableById('apptTable')">Print</button>
@@ -271,7 +227,7 @@ tr:hover td { background: #faf0ff; }
     </div>
   </div>
 
-  <!-- ===== PATIENTS ===== -->
+  <!-- PATIENTS -->
   <div id="page-patients" class="page-section">
     <div class="page-title">Patients</div>
     <div class="table-buttons" style="margin-bottom:14px;">
@@ -279,11 +235,8 @@ tr:hover td { background: #faf0ff; }
     </div>
     <div class="panel">
       <table id="patientsTable">
-        <tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Status</th></tr>
-        <tr><td>1</td><td>Alice Mensah</td><td>34</td><td>Female</td><td>+233 201 111 001</td><td><span class="badge badge-active">Active</span></td></tr>
-        <tr><td>2</td><td>Bob Asante</td><td>50</td><td>Male</td><td>+233 201 111 002</td><td><span class="badge badge-active">Active</span></td></tr>
-        <tr><td>3</td><td>Charlie Osei</td><td>29</td><td>Male</td><td>+233 201 111 003</td><td><span class="badge badge-active">Active</span></td></tr>
-        <tr><td>4</td><td>Eve Darko</td><td>41</td><td>Female</td><td>+233 201 111 004</td><td><span class="badge badge-active">Active</span></td></tr>
+        <thead><tr><th>#</th><th>Name</th><th>Age</th><th>Gender</th><th>Diagnosis</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="patientsBody"><tr class="loading-row"><td colspan="7">Loading patients...</td></tr></tbody>
       </table>
       <div class="table-buttons">
         <button onclick="printTableById('patientsTable')">Print</button>
@@ -293,31 +246,17 @@ tr:hover td { background: #faf0ff; }
     </div>
   </div>
 
-  <!-- ===== WALK-INS ===== -->
+  <!-- WALK-INS -->
   <div id="page-walkin" class="page-section">
     <div class="page-title">Walk-in Patients</div>
     <div class="table-buttons" style="margin-bottom:14px;">
       <button onclick="openModal('walkin')">+ Register Walk-in</button>
     </div>
-    <div class="walkin-row" id="walkinCards">
-      <div class="walkin-card">
-        <div class="wtime">Arrived: 11:05 AM</div>
-        <div class="wname">Walk-in Patient #1</div>
-        <div class="wdoc">Assigned to: Dr. Mensah</div>
-        <div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>
-      </div>
-      <div class="walkin-card" style="border-left-color:#9b59b6;">
-        <div class="wtime">Arrived: 01:40 PM</div>
-        <div class="wname">Walk-in Patient #2</div>
-        <div class="wdoc">Assigned to: Dr. Smith</div>
-        <div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>
-      </div>
-    </div>
+    <div class="walkin-row" id="walkinCards"></div>
     <div class="panel" style="margin-top:20px;">
       <table id="walkinTable">
-        <tr><th>#</th><th>Name</th><th>Arrival Time</th><th>Assigned Doctor</th><th>Status</th></tr>
-        <tr><td>1</td><td>Walk-in #1</td><td>11:05 AM</td><td>Dr. Mensah</td><td><span class="badge badge-pending">Waiting</span></td></tr>
-        <tr><td>2</td><td>Walk-in #2</td><td>01:40 PM</td><td>Dr. Smith</td><td><span class="badge badge-pending">Waiting</span></td></tr>
+        <thead><tr><th>#</th><th>Name</th><th>Arrival Time</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="walkinBody"><tr class="loading-row"><td colspan="6">No walk-ins yet today.</td></tr></tbody>
       </table>
       <div class="table-buttons">
         <button onclick="printTableById('walkinTable')">Print</button>
@@ -326,23 +265,21 @@ tr:hover td { background: #faf0ff; }
     </div>
   </div>
 
-  <!-- ===== PAYMENTS ===== -->
+  <!-- PAYMENTS -->
   <div id="page-payments" class="page-section">
     <div class="page-title">Payments</div>
     <div class="pay-summary">
-      <div class="pay-card"><div class="amount">GHS 1,200</div><div class="lbl">Total Collected</div></div>
-      <div class="pay-card"><div class="amount" style="color:#e67e22;">GHS 350</div><div class="lbl">Pending</div></div>
-      <div class="pay-card"><div class="amount" style="color:#27ae60;">GHS 850</div><div class="lbl">Cleared Today</div></div>
+      <div class="pay-card"><div class="amount" id="payTotal">GHS 0</div><div class="lbl">Total Collected</div></div>
+      <div class="pay-card"><div class="amount" style="color:#e67e22;" id="payPending">GHS 0</div><div class="lbl">Pending</div></div>
+      <div class="pay-card"><div class="amount" style="color:#27ae60;" id="payCleared">GHS 0</div><div class="lbl">Cleared</div></div>
     </div>
     <div class="table-buttons" style="margin-bottom:14px;">
       <button onclick="openModal('payment')">+ Record Payment</button>
     </div>
     <div class="panel">
       <table id="paymentsTable">
-        <tr><th>ID</th><th>Patient</th><th>Amount (GHS)</th><th>Date</th><th>Method</th><th>Status</th></tr>
-        <tr><td>1</td><td>Alice Mensah</td><td>500</td><td>2026-03-25</td><td>Cash</td><td><span class="badge badge-paid">Paid</span></td></tr>
-        <tr><td>2</td><td>Bob Asante</td><td>350</td><td>2026-03-26</td><td>MoMo</td><td><span class="badge badge-unpaid">Pending</span></td></tr>
-        <tr><td>3</td><td>Charlie Osei</td><td>350</td><td>2026-03-27</td><td>Card</td><td><span class="badge badge-paid">Paid</span></td></tr>
+        <thead><tr><th>#</th><th>Patient</th><th>Amount (GHS)</th><th>Date</th><th>Method</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="paymentsBody"><tr class="loading-row"><td colspan="7">Loading payments...</td></tr></tbody>
       </table>
       <div class="table-buttons">
         <button onclick="printTableById('paymentsTable')">Print</button>
@@ -352,26 +289,26 @@ tr:hover td { background: #faf0ff; }
     </div>
   </div>
 
-  <!-- ===== SETTINGS ===== -->
+  <!-- SETTINGS -->
   <div id="page-settings" class="page-section">
     <div class="page-title">Profile Settings</div>
     <div class="panel">
       <h3>Account Information</h3>
       <div style="margin-top:12px;" class="settings-form">
-        <div><label>First Name</label><input type="text" value="Mary"></div>
-        <div><label>Last Name</label><input type="text" value="Ofori"></div>
-        <div><label>Email</label><input type="email" value="receptionist@hospital.com"></div>
-        <div><label>Phone</label><input type="text" value="+233 201 000 003"></div>
+        <div><label>First Name</label><input type="text" id="settingFirstName" value="Mary"></div>
+        <div><label>Last Name</label><input type="text" id="settingLastName" value="Ofori"></div>
+        <div><label>Email</label><input type="email" id="settingEmail" value="receptionist@hospital.com"></div>
+        <div><label>Phone</label><input type="text" id="settingPhone" value="+233 201 000 003"></div>
         <div><label>Department</label><input type="text" value="Front Desk" readonly style="background:#f5f5f5;"></div>
-        <div><label>Staff ID</label><input type="text" value="REC-001" readonly style="background:#f5f5f5;"></div>
-        <div class="full"><label>New Password</label><input type="password" placeholder="Enter new password"></div>
-        <div class="full"><label>Confirm Password</label><input type="password" placeholder="Confirm new password"></div>
+        <div><label>Username</label><input type="text" id="settingUsername" readonly style="background:#f5f5f5;"></div>
+        <div class="full"><label>New Password</label><input type="password" id="settingPw" placeholder="Enter new password"></div>
+        <div class="full"><label>Confirm Password</label><input type="password" id="settingPwConfirm" placeholder="Confirm new password"></div>
       </div>
-      <button class="btn-primary" onclick="alert('Settings saved!')">Save Changes</button>
+      <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
     </div>
   </div>
 
-</div><!-- /.main -->
+</div>
 
 <!-- MODAL -->
 <div id="universalModal" class="modal">
@@ -380,14 +317,296 @@ tr:hover td { background: #faf0ff; }
     <div id="modalFields"></div>
     <div class="modal-buttons">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveModal()">Save</button>
+      <button class="btn-save" id="modalSaveBtn" onclick="saveModal()">Save</button>
     </div>
   </div>
 </div>
 
-<script>
+<!-- TOAST -->
+<div id="toast"></div>
 
-/* NAV */
+<script>
+const API = 'http://localhost:8080/api';
+let dashChartObj = null;
+let apptChartObj = null;
+let walkinCount  = 0;
+
+// ─── AUTH ─────────────────────────────────────────────────────
+window.onload = async function () {
+  const user = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
+  if (!user || role !== 'receptionist') {
+    window.location.href = 'HospitalLogin.html';
+    return;
+  }
+
+  document.getElementById('userDisplay').textContent  = user;
+  document.getElementById('sidebarName').textContent  = user;
+  document.getElementById('settingUsername').value    = user;
+
+  startClock();
+  await checkDBConnection();
+  await loadAllData();
+};
+
+// ─── LOGOUT ───────────────────────────────────────────────────
+function logout() {
+  localStorage.removeItem('username');
+  localStorage.removeItem('role');
+  localStorage.removeItem('userId');
+  window.location.href = 'HospitalLogin.html';
+}
+
+// ─── CLOCK ────────────────────────────────────────────────────
+function startClock() {
+  setInterval(() => {
+    document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+  }, 1000);
+}
+
+// ─── DB CHECK ─────────────────────────────────────────────────
+async function checkDBConnection() {
+  const dot = document.getElementById('dbDot');
+  const label = document.getElementById('dbLabel');
+  try {
+    const res = await fetch('http://localhost:8080/actuator/health', { signal: AbortSignal.timeout(4000) });
+    const data = await res.json();
+    if (data.status === 'UP') {
+      dot.className = 'db-dot connected';
+      label.textContent = 'DB Connected';
+    } else throw new Error();
+  } catch {
+    dot.className = 'db-dot disconnected';
+    label.textContent = 'DB Offline';
+    showToast('Cannot reach backend on port 8080.', true);
+  }
+}
+
+// ─── TOAST ────────────────────────────────────────────────────
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = isError ? 'error-toast' : '';
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+
+// ─── LOAD ALL ─────────────────────────────────────────────────
+async function loadAllData() {
+  await Promise.all([loadAppointments(), loadPatients(), loadPayments()]);
+}
+
+// ─── APPOINTMENTS ─────────────────────────────────────────────
+async function loadAppointments() {
+  try {
+    const res  = await fetch(`${API}/appointments`);
+    const data = await res.json();
+
+    const today = new Date().toISOString().slice(0, 10);
+    const todayAppts = data.filter(a => (a.date || '').startsWith(today));
+    document.getElementById('statTodayAppts').textContent = todayAppts.length;
+
+    // Dashboard today's list
+    const dashBody = document.getElementById('dashApptBody');
+    if (!todayAppts.length) {
+      dashBody.innerHTML = '<tr class="loading-row"><td colspan="4">No appointments today.</td></tr>';
+    } else {
+      dashBody.innerHTML = todayAppts.map(a => `
+        <tr>
+          <td>${a.time || '—'}</td>
+          <td>${a.patientName || '—'}</td>
+          <td>${a.reason || '—'}</td>
+          <td><span class="badge ${a.status === 'Done' ? 'badge-done' : 'badge-pending'}">${a.status || 'Pending'}</span></td>
+        </tr>`).join('');
+    }
+
+    // Full appointments table
+    const tbody = document.getElementById('apptBody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="7">No appointments found.</td></tr>';
+    } else {
+      tbody.innerHTML = data.map((a, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${a.patientName || '—'}</td>
+          <td>${a.date ? a.date.slice(0,10) : '—'}</td>
+          <td>${a.time || '—'}</td>
+          <td>${a.reason || '—'}</td>
+          <td><span class="badge ${a.status === 'Done' ? 'badge-done' : 'badge-pending'}">${a.status || 'Pending'}</span></td>
+          <td>
+            <button class="btn-action btn-done" onclick="updateApptStatus('${a.id || a._id}','Done')">Done</button>
+            <button class="btn-action btn-delete" onclick="deleteAppt('${a.id || a._id}')">Delete</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    buildCharts(data);
+  } catch {
+    document.getElementById('apptBody').innerHTML =
+      '<tr class="loading-row"><td colspan="7">Failed to load appointments.</td></tr>';
+  }
+}
+
+async function updateApptStatus(id, status) {
+  try {
+    await fetch(`${API}/appointments/status/${id}?status=${status}`, { method: 'PATCH' });
+    showToast(`Marked as ${status}.`);
+    loadAppointments();
+  } catch { showToast('Update failed.', true); }
+}
+
+async function deleteAppt(id) {
+  if (!confirm('Delete this appointment?')) return;
+  try {
+    await fetch(`${API}/appointments/${id}`, { method: 'DELETE' });
+    showToast('Appointment deleted.');
+    loadAppointments();
+  } catch { showToast('Delete failed.', true); }
+}
+
+// ─── PATIENTS ─────────────────────────────────────────────────
+async function loadPatients() {
+  try {
+    const res  = await fetch(`${API}/patients`);
+    const data = await res.json();
+    document.getElementById('statPatients').textContent = data.length;
+
+    const tbody = document.getElementById('patientsBody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="7">No patients found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map((p, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${p.name || '—'}</td>
+        <td>${p.age || '—'}</td>
+        <td>${p.gender || '—'}</td>
+        <td>${p.diagnosis || '—'}</td>
+        <td><span class="badge ${p.status === 'Critical' ? 'badge-critical' : 'badge-stable'}">${p.status || 'Stable'}</span></td>
+        <td><button class="btn-action btn-delete" onclick="deletePatient('${p.id || p._id}')">Delete</button></td>
+      </tr>`).join('');
+  } catch {
+    document.getElementById('patientsBody').innerHTML =
+      '<tr class="loading-row"><td colspan="7">Failed to load patients.</td></tr>';
+  }
+}
+
+async function deletePatient(id) {
+  if (!confirm('Delete this patient?')) return;
+  try {
+    await fetch(`${API}/patients/${id}`, { method: 'DELETE' });
+    showToast('Patient deleted.');
+    loadPatients();
+  } catch { showToast('Delete failed.', true); }
+}
+
+// ─── PAYMENTS ─────────────────────────────────────────────────
+async function loadPayments() {
+  try {
+    const res  = await fetch(`${API}/payments`);
+    const data = await res.json();
+
+    const total   = data.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+    const cleared = data.filter(p => p.status === 'Paid').reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+    const pending = total - cleared;
+
+    document.getElementById('payTotal').textContent   = `GHS ${total.toFixed(2)}`;
+    document.getElementById('payCleared').textContent = `GHS ${cleared.toFixed(2)}`;
+    document.getElementById('payPending').textContent = `GHS ${pending.toFixed(2)}`;
+    document.getElementById('statPayments').textContent = `GHS ${cleared.toFixed(2)}`;
+
+    const tbody = document.getElementById('paymentsBody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="7">No payment records.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map((p, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${p.patientName || '—'}</td>
+        <td>${p.amount || '—'}</td>
+        <td>${p.date ? p.date.slice(0,10) : '—'}</td>
+        <td>${p.method || '—'}</td>
+        <td><span class="badge ${p.status === 'Paid' ? 'badge-paid' : 'badge-unpaid'}">${p.status || 'Pending'}</span></td>
+        <td><button class="btn-action btn-delete" onclick="deletePayment('${p.id || p._id}')">Delete</button></td>
+      </tr>`).join('');
+  } catch {
+    document.getElementById('paymentsBody').innerHTML =
+      '<tr class="loading-row"><td colspan="7">Failed to load payments.</td></tr>';
+  }
+}
+
+async function deletePayment(id) {
+  if (!confirm('Delete this payment?')) return;
+  try {
+    await fetch(`${API}/payments/${id}`, { method: 'DELETE' });
+    showToast('Payment deleted.');
+    loadPayments();
+  } catch { showToast('Delete failed.', true); }
+}
+
+// ─── SAVE PROFILE ─────────────────────────────────────────────
+async function saveProfile() {
+  const pw  = document.getElementById('settingPw').value;
+  const pwc = document.getElementById('settingPwConfirm').value;
+  if (pw && pw !== pwc) { showToast('Passwords do not match.', true); return; }
+  const userId  = localStorage.getItem('userId');
+  const payload = {
+    firstName: document.getElementById('settingFirstName').value,
+    lastName:  document.getElementById('settingLastName').value,
+    email:     document.getElementById('settingEmail').value,
+    phone:     document.getElementById('settingPhone').value,
+  };
+  if (pw) payload.password = pw;
+  try {
+    const res = await fetch(`${API}/auth/profile/${userId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error();
+    showToast('Profile saved!');
+  } catch { showToast('Failed to save profile.', true); }
+}
+
+// ─── CHARTS ───────────────────────────────────────────────────
+function buildCharts(appts) {
+  const done    = appts.filter(a => a.status === 'Done').length;
+  const pending = appts.filter(a => a.status !== 'Done').length;
+
+  if (dashChartObj) dashChartObj.destroy();
+  dashChartObj = new Chart(document.getElementById('dashChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Done', 'Pending'],
+      datasets: [{ data: [done, pending], backgroundColor: ['#27ae60', '#e67e22'] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Weekly bar chart — group by day of week
+  const days = ['Mon','Tue','Wed','Thu','Fri'];
+  const counts = [0,0,0,0,0];
+  appts.forEach(a => {
+    if (!a.date) return;
+    const d = new Date(a.date).getDay();
+    if (d >= 1 && d <= 5) counts[d - 1]++;
+  });
+
+  if (apptChartObj) apptChartObj.destroy();
+  apptChartObj = new Chart(document.getElementById('apptChart'), {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [{ label: 'Booked', data: counts, backgroundColor: '#9b59b6' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+}
+
+// ─── NAV ──────────────────────────────────────────────────────
 function navigate(el, page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
@@ -395,46 +614,7 @@ function navigate(el, page) {
   document.getElementById('page-' + page).classList.add('active');
 }
 
-/* AUTH */
-window.onload = function () {
-  const user = localStorage.getItem('username');
-  const role = localStorage.getItem('role');
-  if (!user || role !== 'receptionist') { window.location.href = 'HospitalLogin.html'; return; }
-  document.getElementById('userDisplay').textContent = user;
-  document.getElementById('sidebarName').textContent = user;
-  buildCharts();
-};
-
-function logout() {
-  localStorage.removeItem('username');
-  localStorage.removeItem('role');
-  window.location.href = 'HospitalLogin.html';
-}
-
-/* CLOCK */
-setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-
-/* CHARTS */
-function buildCharts() {
-  new Chart(document.getElementById('dashChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Done', 'Pending', 'Walk-in'],
-      datasets: [{ data: [2, 2, 1], backgroundColor: ['#27ae60', '#e67e22', '#9b59b6'] }]
-    },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-  });
-  new Chart(document.getElementById('apptChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      datasets: [{ label: 'Booked', data: [5, 4, 6, 3, 5], backgroundColor: '#9b59b6' }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-  });
-}
-
-/* TABLE UTILS */
+// ─── TABLE UTILS ──────────────────────────────────────────────
 function printTableById(id) {
   const win = window.open('', '', 'height=600,width=800');
   win.document.write('<html><head><title>Print</title><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px;font-size:13px}</style></head><body>' + document.getElementById(id).outerHTML + '</body></html>');
@@ -442,55 +622,54 @@ function printTableById(id) {
 }
 function copyTableById(id) {
   const text = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => c.innerText).join('\t')).join('\n');
-  navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
 }
 function exportCSVById(id, filename) {
-  const csv = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => '"' + c.innerText.replace(/"/g, '""') + '"').join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-  a.download = filename; a.click();
+  const csv = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => '"' + c.innerText.replace(/"/g,'""') + '"').join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download = filename; a.click();
 }
 
-/* MODAL */
+// ─── MODAL ────────────────────────────────────────────────────
 let currentModalType = '';
-let walkinCount = 2;
-
 const modalConfigs = {
   appointment: {
     title: 'Book Appointment',
+    endpoint: () => `${API}/appointments`,
     fields: [
-      { label: 'Patient Name', id: 'mPatient', type: 'text', placeholder: 'Full name' },
-      { label: 'Doctor', id: 'mDoctor', type: 'select', options: ['Dr. Smith', 'Dr. Mensah'] },
-      { label: 'Date', id: 'mDate', type: 'date' },
-      { label: 'Time', id: 'mTime', type: 'time' },
-      { label: 'Status', id: 'mStatus', type: 'select', options: ['Pending', 'Done'] }
+      { label: 'Patient Name', id: 'mPatient', key: 'patientName', type: 'text',   placeholder: 'Full name' },
+      { label: 'Date',         id: 'mDate',    key: 'date',        type: 'date' },
+      { label: 'Time',         id: 'mTime',    key: 'time',        type: 'time' },
+      { label: 'Reason',       id: 'mReason',  key: 'reason',      type: 'text',   placeholder: 'Reason for visit' },
+      { label: 'Status',       id: 'mStatus',  key: 'status',      type: 'select', options: ['Pending','Done'] }
     ]
   },
   patient: {
     title: 'Register Patient',
+    endpoint: () => `${API}/patients`,
     fields: [
-      { label: 'Full Name', id: 'mName', type: 'text', placeholder: 'Full name' },
-      { label: 'Age', id: 'mAge', type: 'number', placeholder: 'Age' },
-      { label: 'Gender', id: 'mGender', type: 'select', options: ['Male', 'Female', 'Other'] },
-      { label: 'Phone', id: 'mPhone', type: 'text', placeholder: '+233 ...' }
+      { label: 'Full Name',  id: 'mName',   key: 'name',      type: 'text',   placeholder: 'Full name' },
+      { label: 'Age',        id: 'mAge',    key: 'age',       type: 'number', placeholder: 'Age' },
+      { label: 'Gender',     id: 'mGender', key: 'gender',    type: 'select', options: ['Male','Female','Other'] },
+      { label: 'Diagnosis',  id: 'mDiag',   key: 'diagnosis', type: 'text',   placeholder: 'Diagnosis (if known)' },
+      { label: 'Status',     id: 'mStat',   key: 'status',    type: 'select', options: ['Stable','Critical'] }
     ]
   },
   walkin: {
     title: 'Register Walk-in',
     fields: [
-      { label: 'Patient Name (optional)', id: 'mWName', type: 'text', placeholder: 'Name or leave blank' },
-      { label: 'Assigned Doctor', id: 'mWDoc', type: 'select', options: ['Dr. Smith', 'Dr. Mensah'] },
-      { label: 'Reason', id: 'mWReason', type: 'text', placeholder: 'Brief reason for visit' }
+      { label: 'Patient Name (optional)', id: 'mWName',   key: 'name',   type: 'text', placeholder: 'Name or leave blank', optional: true },
+      { label: 'Reason',                  id: 'mWReason', key: 'reason', type: 'text', placeholder: 'Brief reason for visit' }
     ]
   },
   payment: {
     title: 'Record Payment',
+    endpoint: () => `${API}/payments`,
     fields: [
-      { label: 'Patient Name', id: 'mPayPat', type: 'text', placeholder: 'Patient name' },
-      { label: 'Amount (GHS)', id: 'mAmount', type: 'number', placeholder: '0.00' },
-      { label: 'Date', id: 'mPayDate', type: 'date' },
-      { label: 'Method', id: 'mMethod', type: 'select', options: ['Cash', 'MoMo', 'Card', 'Bank Transfer'] },
-      { label: 'Status', id: 'mPayStatus', type: 'select', options: ['Paid', 'Pending'] }
+      { label: 'Patient Name', id: 'mPayPat', key: 'patientName', type: 'text',   placeholder: 'Patient name' },
+      { label: 'Amount (GHS)', id: 'mAmt',    key: 'amount',      type: 'number', placeholder: '0.00' },
+      { label: 'Date',         id: 'mPayDate',key: 'date',        type: 'date' },
+      { label: 'Method',       id: 'mMethod', key: 'method',      type: 'select', options: ['Cash','MoMo','Card','Bank Transfer'] },
+      { label: 'Status',       id: 'mPaySt',  key: 'status',      type: 'select', options: ['Paid','Pending'] }
     ]
   }
 };
@@ -514,78 +693,69 @@ function openModal(type) {
 
 function closeModal() { document.getElementById('universalModal').style.display = 'none'; }
 
-function saveModal() {
+async function saveModal() {
   const config = modalConfigs[currentModalType];
-  const vals = {};
-  for (const f of config.fields) {
-    const el = document.getElementById(f.id);
-    // walk-in name is optional
-    if (!el || (!el.value.trim() && f.id !== 'mWName')) { alert('Please fill all required fields!'); return; }
-    vals[f.id] = el.value.trim();
-  }
 
-  if (currentModalType === 'appointment') {
-    const t = document.getElementById('apptTable');
-    const sc = vals.mStatus === 'Done' ? 'badge-done' : 'badge-pending';
-    const row = t.insertRow();
-    row.innerHTML = `<td>${t.rows.length - 1}</td><td>${vals.mPatient}</td><td>${vals.mDoctor}</td><td>${vals.mDate}</td><td>${vals.mTime}</td><td><span class="badge ${sc}">${vals.mStatus}</span></td>`;
-  } else if (currentModalType === 'patient') {
-    const t = document.getElementById('patientsTable');
-    const row = t.insertRow();
-    row.innerHTML = `<td>${t.rows.length - 1}</td><td>${vals.mName}</td><td>${vals.mAge}</td><td>${vals.mGender}</td><td>${vals.mPhone}</td><td><span class="badge badge-active">Active</span></td>`;
-  } else if (currentModalType === 'walkin') {
+  // Walk-in is handled locally (no backend endpoint needed)
+  if (currentModalType === 'walkin') {
+    const nameEl   = document.getElementById('mWName');
+    const reasonEl = document.getElementById('mWReason');
+    if (!reasonEl.value.trim()) { showToast('Please enter a reason.', true); return; }
+
     walkinCount++;
-    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const name = vals.mWName || `Walk-in #${walkinCount}`;
+    const now  = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const name = nameEl.value.trim() || `Walk-in #${walkinCount}`;
+
     // Add card
     const card = document.createElement('div');
     card.className = 'walkin-card';
-    card.style.borderLeftColor = '#7b3fa0';
-    card.innerHTML = `<div class="wtime">Arrived: ${now}</div><div class="wname">${name}</div><div class="wdoc">Assigned to: ${vals.mWDoc}</div><div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>`;
+    card.innerHTML = `
+      <div class="wtime">Arrived: ${now}</div>
+      <div class="wname">${name}</div>
+      <div class="wdoc">${reasonEl.value.trim()}</div>
+      <div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>`;
     document.getElementById('walkinCards').appendChild(card);
+
     // Add table row
-    const t = document.getElementById('walkinTable');
-    const row = t.insertRow();
-    row.innerHTML = `<td>${walkinCount}</td><td>${name}</td><td>${now}</td><td>${vals.mWDoc}</td><td><span class="badge badge-pending">Waiting</span></td>`;
-  } else if (currentModalType === 'payment') {
-    const t = document.getElementById('paymentsTable');
-    const sc = vals.mPayStatus === 'Paid' ? 'badge-paid' : 'badge-unpaid';
-    const row = t.insertRow();
-    row.innerHTML = `<td>${t.rows.length - 1}</td><td>${vals.mPayPat}</td><td>${vals.mAmount}</td><td>${vals.mPayDate}</td><td>${vals.mMethod}</td><td><span class="badge ${sc}">${vals.mPayStatus}</span></td>`;
+    const tbody = document.getElementById('walkinBody');
+    if (tbody.querySelector('.loading-row')) tbody.innerHTML = '';
+    const row = tbody.insertRow();
+    row.innerHTML = `<td>${walkinCount}</td><td>${name}</td><td>${now}</td><td>${reasonEl.value.trim()}</td><td><span class="badge badge-pending">Waiting</span></td><td><button class="btn-action btn-done" onclick="this.closest('tr').querySelector('.badge').textContent='Done';this.closest('tr').querySelector('.badge').className='badge badge-done';this.remove();">Done</button></td>`;
+
+    document.getElementById('statWalkins').textContent = walkinCount;
+    closeModal();
+    showToast('Walk-in registered.');
+    return;
   }
-  closeModal();
-}
 
-async function createAppointment(patientId, doctorId, date, time) {
-    try {
-        const res = await fetch('http://localhost:8080/api/appointments/create', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ patientId, doctorId, date, time })
-        });
+  // All other types — POST to backend
+  const payload = {};
+  for (const f of config.fields) {
+    const el = document.getElementById(f.id);
+    if (!el || (!el.value.trim() && !f.optional)) { showToast('All fields are required!', true); return; }
+    payload[f.key] = el.value.trim();
+  }
 
-        if (!res.ok) throw new Error('Failed to create appointment');
-        const appointment = await res.json();
-        console.log('Appointment created:', appointment);
-        return appointment;
-    } catch (err) {
-        console.error(err);
-        alert(err.message);
-    }
-}
+  const saveBtn = document.getElementById('modalSaveBtn');
+  saveBtn.textContent = 'Saving...'; saveBtn.disabled = true;
 
-// del appoint.
-async function deleteAppointment(appointmentId) {
-    try {
-        const res = await fetch(`http://localhost:8080/api/appointments/${appointmentId}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete appointment');
-        console.log('Appointment deleted:', appointmentId);
-    } catch (err) {
-        console.error(err);
-        alert(err.message);
-    }
+  try {
+    const res = await fetch(config.endpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    showToast('Saved successfully!');
+    closeModal();
+    if (currentModalType === 'appointment') loadAppointments();
+    if (currentModalType === 'patient')     loadPatients();
+    if (currentModalType === 'payment')     loadPayments();
+  } catch (err) {
+    showToast(`Save failed: ${err.message}`, true);
+  } finally {
+    saveBtn.textContent = 'Save'; saveBtn.disabled = false;
+  }
 }
 
 document.getElementById('universalModal').addEventListener('click', function(e) {

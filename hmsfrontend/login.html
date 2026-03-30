@@ -236,12 +236,11 @@ const dashboards = {
   receptionist:  "recepboard.html"
 };
 
-function doLogin() {
+async function doLogin() {
   const u   = document.getElementById("username").value.trim();
   const p   = document.getElementById("password").value.trim();
   const t   = document.getElementById("userType").value;
   const msg = document.getElementById("msg");
-
   msg.className = "msg";
 
   if (!u || !p || !t) {
@@ -250,24 +249,32 @@ function doLogin() {
     return;
   }
 
-  // Demo credentials
-  const valid =
-    (u === "admin"         && p === "admin123"   && t === "admin") ||
-    (u === "doctor1"       && p === "doc123"      && t === "doctor") ||
-    (u === "receptionist"  && p === "recept123"   && t === "receptionist");
+  try {
+    const res = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: u, password: p, role: t })
+    });
 
-  if (valid) {
-    localStorage.setItem("username", u);
-    localStorage.setItem("role", t);
+    if (!res.ok) throw new Error("Invalid credentials or wrong role!");
+    const data = await res.json();
+
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("role",     data.role);
+    localStorage.setItem("userId",   data.userId);
 
     msg.textContent = "Login successful! Redirecting...";
     msg.classList.add("success");
 
-    setTimeout(() => {
-      window.location.href = dashboards[t];
-    }, 1000);
-  } else {
-    msg.textContent = "Invalid credentials or wrong role selected!";
+    const dashboards = {
+      admin:        "dashboard.html",
+      doctor:       "doctorboard.html",
+      receptionist: "recepboard.html"
+    };
+    setTimeout(() => { window.location.href = dashboards[data.role]; }, 1000);
+
+  } catch (err) {
+    msg.textContent = err.message || "Login failed.";
     msg.classList.add("error");
   }
 }

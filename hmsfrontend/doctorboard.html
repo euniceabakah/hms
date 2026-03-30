@@ -168,7 +168,7 @@ tr:hover td { background: #f0faf5; }
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="brand">🏥 Hospital Management</div>
+  <div class="brand"><i class="fas fa-hospital" style="margin-right:8px;"></i>Hospital Management</div>
   <div id="clock" style="font-size:13px;opacity:0.8;"></div>
   <!-- DB Connection Status -->
   <div class="db-status">
@@ -183,7 +183,7 @@ tr:hover td { background: #f0faf5; }
 <!-- SIDEBAR -->
 <div class="sidebar">
   <div class="doctor-box">
-    <div class="doc-avatar">👨‍⚕️</div>
+    <div class="doc-avatar"><i class="fas fa-user-md"></i></div>
     <div style="font-weight:700;font-size:15px;" id="sidebarName">Doctor</div>
     <div style="font-size:12px;opacity:0.6;margin-top:3px;">General Medicine</div>
   </div>
@@ -348,7 +348,7 @@ window.onload = async function () {
   doctorId   = localStorage.getItem('userId'); // store userId at login if available
 
   if (!user || role !== 'doctor') {
-    window.location.href = 'HospitalLogin.html';
+    window.location.href = 'login.html';
     return;
   }
 
@@ -367,7 +367,7 @@ function logout() {
   localStorage.removeItem('role');
   localStorage.removeItem('userId');
   // Change 'HospitalLogin.html' below to match your exact login filename
-  window.location.href = 'HospitalLogin.html';
+  window.location.href = 'login.html';
 }
 
 // ─── CLOCK ────────────────────────────────────────────────────

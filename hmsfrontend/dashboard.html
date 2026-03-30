@@ -136,7 +136,7 @@ tr:hover td { background: #f0f7ff; }
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="brand">🏥 Hospital Management</div>
+  <div class="brand"><i class="fas fa-hospital" style="margin-right:8px;"></i>Hospital Management</div>
   <div id="clock" style="font-size:13px;opacity:0.8;"></div>
   <div class="db-status">
     <div class="db-dot" id="dbDot"></div>
@@ -315,14 +315,14 @@ const API = 'http://localhost:8080/api';
 let dashChart = null;
 let apptChart = null;
 
-// ─── AUTH ─────────────────────────────────────────────────────
+// AUTH 
 window.onload = async function () {
   const user = localStorage.getItem('username');
   const role = localStorage.getItem('role');
 
-  // ⚠️ FIXED: removed the broken user.role check that was crashing the page
+  // FIXED: removed the broken user.role check that was crashing the page
   if (!user || role !== 'admin') {
-    window.location.href = 'HospitalLogin.html';
+    window.location.href = 'login.html';
     return;
   }
 
@@ -335,27 +335,31 @@ window.onload = async function () {
   await loadAllData();
 };
 
-// ─── LOGOUT ───────────────────────────────────────────────────
+// LOGOUT
 function logout() {
   localStorage.removeItem('username');
   localStorage.removeItem('role');
   localStorage.removeItem('userId');
-  window.location.href = 'HospitalLogin.html';
+  window.location.href = 'login.html';
 }
 
-// ─── CLOCK ────────────────────────────────────────────────────
+//  CLOCK 
 function startClock() {
   setInterval(() => {
     document.getElementById('clock').innerText = new Date().toLocaleTimeString();
   }, 1000);
 }
 
-// ─── DB CHECK ─────────────────────────────────────────────────
+//  DB CHECK
 async function checkDBConnection() {
   const dot = document.getElementById('dbDot');
   const label = document.getElementById('dbLabel');
+  // Wait 2 seconds for Spring Boot to be ready
+  await new Promise(r => setTimeout(r, 2000));
   try {
-    const res = await fetch('http://localhost:8080/actuator/health', { signal: AbortSignal.timeout(4000) });
+    const res = await fetch('http://localhost:8080/actuator/health', { 
+      signal: AbortSignal.timeout(8000) // increased timeout
+    });
     const data = await res.json();
     if (data.status === 'UP') {
       dot.className = 'db-dot connected';
@@ -364,11 +368,11 @@ async function checkDBConnection() {
   } catch {
     dot.className = 'db-dot disconnected';
     label.textContent = 'DB Offline';
-    showToast('Cannot reach backend on port 8080.', true);
+    showToast('Cannot reach backend. Check Spring Boot is running on port 8080.', true);
   }
 }
 
-// ─── TOAST ────────────────────────────────────────────────────
+//  TOAST
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -377,12 +381,12 @@ function showToast(msg, isError = false) {
   setTimeout(() => { t.style.display = 'none'; }, 3500);
 }
 
-// ─── LOAD ALL ─────────────────────────────────────────────────
+//  LOAD ALL
 async function loadAllData() {
   await Promise.all([loadDoctors(), loadPatients(), loadAppointments(), loadPayments()]);
 }
 
-// ─── DOCTORS ──────────────────────────────────────────────────
+//  DOCTORS
 async function loadDoctors() {
   try {
     const res  = await fetch(`${API}/users`);
@@ -414,7 +418,7 @@ async function deleteUser(id) {
   } catch { showToast('Delete failed.', true); }
 }
 
-// ─── PATIENTS ─────────────────────────────────────────────────
+//  PATIENTS
 async function loadPatients() {
   try {
     const res  = await fetch(`${API}/patients`);
@@ -447,7 +451,7 @@ async function deletePatient(id) {
   } catch { showToast('Delete failed.', true); }
 }
 
-// ─── APPOINTMENTS ─────────────────────────────────────────────
+//  APPOINTMENTS
 async function loadAppointments() {
   try {
     const res  = await fetch(`${API}/appointments`);
@@ -507,7 +511,7 @@ async function deleteAppt(id) {
   } catch { showToast('Delete failed.', true); }
 }
 
-// ─── PAYMENTS ─────────────────────────────────────────────────
+//  PAYMENTS
 async function loadPayments() {
   try {
     const res  = await fetch(`${API}/payments`);
@@ -546,7 +550,7 @@ async function deletePayment(id) {
   } catch { showToast('Delete failed.', true); }
 }
 
-// ─── SAVE PROFILE ─────────────────────────────────────────────
+// SAVE PROFILE
 async function saveProfile() {
   const pw = document.getElementById('settingPw').value;
   const pwc = document.getElementById('settingPwConfirm').value;
@@ -570,7 +574,7 @@ async function saveProfile() {
   } catch { showToast('Failed to save profile.', true); }
 }
 
-// ─── CHARTS ───────────────────────────────────────────────────
+//  CHARTS
 function buildCharts(appts) {
   const counts = {};
   appts.forEach(a => {
@@ -595,7 +599,7 @@ function buildCharts(appts) {
   });
 }
 
-// ─── NAV ──────────────────────────────────────────────────────
+//  NAV 
 function navigate(el, page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
@@ -603,7 +607,7 @@ function navigate(el, page) {
   document.getElementById('page-' + page).classList.add('active');
 }
 
-// ─── TABLE UTILS ──────────────────────────────────────────────
+//  TABLE UTILS 
 function printTableById(id) {
   const win = window.open('', '', 'height=600,width=800');
   win.document.write('<html><head><title>Print</title><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px;font-size:13px}</style></head><body>' + document.getElementById(id).outerHTML + '</body></html>');
@@ -618,7 +622,7 @@ function exportCSVById(id, filename) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = filename; a.click();
 }
 
-// ─── MODAL ────────────────────────────────────────────────────
+// MODAL 
 let currentModalType = '';
 const modalConfigs = {
   appointment: {

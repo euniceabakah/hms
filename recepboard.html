@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital – Receptionist Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary-dark: #7b3fa0;
+  --primary-mid:  #9b59b6;
+  --primary-light:#c39bd3;
+  --pale:         #f5eefb;
+  --white:        #ffffff;
+  --gray-1:       #faf6fd;
+  --gray-2:       #e2d5ed;
+  --gray-3:       #a07db8;
+  --text:         #2c1040;
+  --sidebar-w:    230px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Lato', sans-serif; background: var(--gray-1); overflow-x: hidden; }
+
+/* TOPBAR */
+.topbar {
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary-mid));
+  color: white;
+  display: flex; align-items: center;
+  padding: 0 24px; height: 54px; gap: 16px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+}
+.brand { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 17px; margin-right: auto; }
+.role-badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+.btn-logout { background: #c0392b; border: none; padding: 7px 14px; color: white; cursor: pointer; border-radius: 6px; font-size: 13px; }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #4a1a6b, #7b3fa0);
+  color: white;
+  padding: 0 10px 20px;
+  position: fixed; top: 54px; left: 0;
+  height: calc(100vh - 54px); overflow-y: auto;
+}
+
+.recept-box {
+  text-align: center;
+  padding: 24px 0 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 14px;
+}
+
+.rec-avatar {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.section-label { font-size: 10px; color: rgba(255,255,255,0.5); margin: 14px 4px 6px; letter-spacing: 1.5px; font-weight: 700; }
+
+.nav-item {
+  padding: 11px 14px; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px; transition: background 0.2s; margin-bottom: 2px;
+}
+.nav-item:hover { background: rgba(255,255,255,0.12); }
+.nav-item.active { background: rgba(255,255,255,0.22); font-weight: 700; }
+.nav-item i { width: 18px; text-align: center; opacity: 0.85; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); margin-top: 54px; padding: 26px; min-height: calc(100vh - 54px); }
+
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+.page-title { font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; }
+
+/* STAT CARDS */
+.stat-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.stat-card {
+  flex: 1; min-width: 150px;
+  background: linear-gradient(135deg, var(--primary-mid), var(--primary-dark));
+  color: white; padding: 20px; border-radius: 14px;
+  display: flex; align-items: center; gap: 14px;
+}
+.stat-card.teal   { background: linear-gradient(135deg, #1abc9c, #0d6b4e); }
+.stat-card.orange { background: linear-gradient(135deg, #e67e22, #c0392b); }
+.stat-card.blue   { background: linear-gradient(135deg, #2980b9, #1a5fa8); }
+.stat-card i { font-size: 22px; background: rgba(255,255,255,0.2); padding: 11px; border-radius: 10px; }
+.stat-card p { font-size: 12px; opacity: 0.88; }
+.stat-card h2 { font-size: 26px; font-weight: 800; }
+
+/* PANEL */
+.panel { background: white; padding: 20px; border-radius: 12px; margin-top: 20px; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+.panel h3 { color: var(--primary-dark); margin-bottom: 14px; font-family: 'Nunito', sans-serif; font-size: 16px; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; text-align: left; border-bottom: 1px solid #f0e8f8; font-size: 13px; }
+th { background: var(--pale); font-weight: 700; color: var(--primary-dark); font-size: 12px; letter-spacing: 0.3px; }
+tr:hover td { background: #faf0ff; }
+
+.table-buttons { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+.table-buttons button { padding: 7px 14px; border: none; border-radius: 6px; background: var(--primary-mid); color: white; cursor: pointer; font-size: 13px; transition: 0.2s; }
+.table-buttons button:hover { background: var(--primary-dark); }
+
+/* BADGES */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-pending  { background: #fff3cd; color: #856404; }
+.badge-done     { background: #d1f0db; color: #155724; }
+.badge-paid     { background: #d1f0db; color: #155724; }
+.badge-unpaid   { background: #f8d7da; color: #721c24; }
+.badge-active   { background: #cce5ff; color: #004085; }
+.badge-inactive { background: #e2e3e5; color: #383d41; }
+
+/* MODAL */
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-content { background: white; width: 420px; max-width: 92%; margin: 70px auto; padding: 24px; border-radius: 14px; display: flex; flex-direction: column; gap: 10px; }
+.modal-content h3 { color: var(--primary-dark); margin-bottom: 4px; }
+.modal-content label { font-weight: 700; font-size: 12px; color: var(--text); margin-top: 4px; display: block; }
+.modal-content input, .modal-content select { width: 100%; padding: 9px 10px; border: 1px solid #ccc; border-radius: 7px; font-size: 14px; }
+.modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+.modal-buttons button { padding: 8px 18px; border: none; border-radius: 7px; cursor: pointer; font-size: 14px; }
+.btn-cancel { background: #eee; color: #555; }
+.btn-save   { background: var(--primary-mid); color: white; }
+.btn-save:hover { background: var(--primary-dark); }
+
+/* PAYMENT SUMMARY */
+.pay-summary { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.pay-card { flex: 1; min-width: 130px; background: white; border: 1px solid var(--gray-2); padding: 16px; border-radius: 12px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.pay-card .amount { font-size: 22px; font-weight: 800; color: var(--primary-dark); }
+.pay-card .lbl { font-size: 11px; color: #888; margin-top: 4px; }
+
+/* SETTINGS */
+.settings-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 580px; }
+.settings-form label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px; }
+.settings-form input, .settings-form select { width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 7px; font-size: 14px; }
+.settings-form .full { grid-column: 1 / -1; }
+.btn-primary { background: var(--primary-mid); color: white; border: none; padding: 10px 24px; border-radius: 7px; cursor: pointer; font-size: 14px; margin-top: 10px; }
+.btn-primary:hover { background: var(--primary-dark); }
+
+/* WALK-IN CARD */
+.walkin-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+.walkin-card { flex: 1; min-width: 220px; background: var(--pale); border-radius: 12px; padding: 16px; border-left: 4px solid var(--primary-mid); }
+.walkin-card .wtime { font-size: 12px; color: var(--gray-3); }
+.walkin-card .wname { font-size: 15px; font-weight: 700; margin: 4px 0 2px; }
+.walkin-card .wdoc  { font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">🏥 Hospital Management</div>
+  <div id="clock" style="font-size:13px;opacity:0.8;"></div>
+  <span class="role-badge">RECEPTIONIST</span>
+  <span style="font-size:13px;">Hello, <strong id="userDisplay"></strong></span>
+  <button class="btn-logout" onclick="logout()">Logout</button>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="recept-box">
+    <div class="rec-avatar">👩‍💼</div>
+    <div style="font-weight:700;font-size:15px;" id="sidebarName">Receptionist</div>
+    <div style="font-size:12px;opacity:0.6;margin-top:3px;">Front Desk</div>
+  </div>
+
+  <p class="section-label">MAIN</p>
+
+  <div class="nav-item active" onclick="navigate(this,'dashboard')">
+    <i class="fas fa-th-large"></i> Dashboard
+  </div>
+  <div class="nav-item" onclick="navigate(this,'appointments')">
+    <i class="fas fa-calendar-alt"></i> Appointments
+  </div>
+  <div class="nav-item" onclick="navigate(this,'patients')">
+    <i class="fas fa-users"></i> Patients
+  </div>
+  <div class="nav-item" onclick="navigate(this,'walkin')">
+    <i class="fas fa-walking"></i> Walk-ins
+  </div>
+  <div class="nav-item" onclick="navigate(this,'payments')">
+    <i class="fas fa-credit-card"></i> Payments
+  </div>
+
+  <p class="section-label">ACCOUNT</p>
+
+  <div class="nav-item" onclick="navigate(this,'settings')">
+    <i class="fas fa-user-cog"></i> Profile Settings
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="page-dashboard" class="page-section active">
+    <div class="page-title">Receptionist Dashboard</div>
+    <div class="stat-row">
+      <div class="stat-card">
+        <i class="fas fa-calendar-check"></i>
+        <div><p>Today's Appointments</p><h2>5</h2></div>
+      </div>
+      <div class="stat-card teal">
+        <i class="fas fa-users"></i>
+        <div><p>Registered Patients</p><h2>4</h2></div>
+      </div>
+      <div class="stat-card orange">
+        <i class="fas fa-walking"></i>
+        <div><p>Walk-ins Today</p><h2>2</h2></div>
+      </div>
+      <div class="stat-card blue">
+        <i class="fas fa-money-bill-wave"></i>
+        <div><p>Payments Today</p><h2>GHS 850</h2></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <div class="panel" style="flex:1;min-width:280px;">
+        <h3>Today's Appointments</h3>
+        <table>
+          <tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr>
+          <tr><td>09:00 AM</td><td>Alice Mensah</td><td>Dr. Smith</td><td><span class="badge badge-done">Done</span></td></tr>
+          <tr><td>10:30 AM</td><td>Bob Asante</td><td>Dr. Smith</td><td><span class="badge badge-done">Done</span></td></tr>
+          <tr><td>12:00 PM</td><td>Charlie Osei</td><td>Dr. Mensah</td><td><span class="badge badge-pending">Pending</span></td></tr>
+          <tr><td>02:00 PM</td><td>Eve Darko</td><td>Dr. Smith</td><td><span class="badge badge-pending">Pending</span></td></tr>
+          <tr><td>03:30 PM</td><td>Walk-in</td><td>Dr. Mensah</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        </table>
+      </div>
+
+      <div class="panel" style="flex:1;min-width:240px;">
+        <h3>Appointment Status</h3>
+        <canvas id="dashChart" height="180"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== APPOINTMENTS ===== -->
+  <div id="page-appointments" class="page-section">
+    <div class="page-title">Appointments</div>
+    <div class="table-buttons" style="margin-bottom:14px;">
+      <button onclick="openModal('appointment')">+ Book Appointment</button>
+    </div>
+    <div class="panel">
+      <table id="apptTable">
+        <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice Mensah</td><td>Dr. Smith</td><td>2026-03-29</td><td>09:00 AM</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>2</td><td>Bob Asante</td><td>Dr. Smith</td><td>2026-03-29</td><td>10:30 AM</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>3</td><td>Charlie Osei</td><td>Dr. Mensah</td><td>2026-03-29</td><td>12:00 PM</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        <tr><td>4</td><td>Eve Darko</td><td>Dr. Smith</td><td>2026-03-29</td><td>02:00 PM</td><td><span class="badge badge-pending">Pending</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('apptTable')">Print</button>
+        <button onclick="copyTableById('apptTable')">Copy</button>
+        <button onclick="exportCSVById('apptTable','appointments.csv')">Export CSV</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Bookings This Week</h3>
+      <canvas id="apptChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- ===== PATIENTS ===== -->
+  <div id="page-patients" class="page-section">
+    <div class="page-title">Patients</div>
+    <div class="table-buttons" style="margin-bottom:14px;">
+      <button onclick="openModal('patient')">+ Register Patient</button>
+    </div>
+    <div class="panel">
+      <table id="patientsTable">
+        <tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice Mensah</td><td>34</td><td>Female</td><td>+233 201 111 001</td><td><span class="badge badge-active">Active</span></td></tr>
+        <tr><td>2</td><td>Bob Asante</td><td>50</td><td>Male</td><td>+233 201 111 002</td><td><span class="badge badge-active">Active</span></td></tr>
+        <tr><td>3</td><td>Charlie Osei</td><td>29</td><td>Male</td><td>+233 201 111 003</td><td><span class="badge badge-active">Active</span></td></tr>
+        <tr><td>4</td><td>Eve Darko</td><td>41</td><td>Female</td><td>+233 201 111 004</td><td><span class="badge badge-active">Active</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('patientsTable')">Print</button>
+        <button onclick="copyTableById('patientsTable')">Copy</button>
+        <button onclick="exportCSVById('patientsTable','patients.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WALK-INS ===== -->
+  <div id="page-walkin" class="page-section">
+    <div class="page-title">Walk-in Patients</div>
+    <div class="table-buttons" style="margin-bottom:14px;">
+      <button onclick="openModal('walkin')">+ Register Walk-in</button>
+    </div>
+    <div class="walkin-row" id="walkinCards">
+      <div class="walkin-card">
+        <div class="wtime">Arrived: 11:05 AM</div>
+        <div class="wname">Walk-in Patient #1</div>
+        <div class="wdoc">Assigned to: Dr. Mensah</div>
+        <div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>
+      </div>
+      <div class="walkin-card" style="border-left-color:#9b59b6;">
+        <div class="wtime">Arrived: 01:40 PM</div>
+        <div class="wname">Walk-in Patient #2</div>
+        <div class="wdoc">Assigned to: Dr. Smith</div>
+        <div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:20px;">
+      <table id="walkinTable">
+        <tr><th>#</th><th>Name</th><th>Arrival Time</th><th>Assigned Doctor</th><th>Status</th></tr>
+        <tr><td>1</td><td>Walk-in #1</td><td>11:05 AM</td><td>Dr. Mensah</td><td><span class="badge badge-pending">Waiting</span></td></tr>
+        <tr><td>2</td><td>Walk-in #2</td><td>01:40 PM</td><td>Dr. Smith</td><td><span class="badge badge-pending">Waiting</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('walkinTable')">Print</button>
+        <button onclick="exportCSVById('walkinTable','walkins.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAYMENTS ===== -->
+  <div id="page-payments" class="page-section">
+    <div class="page-title">Payments</div>
+    <div class="pay-summary">
+      <div class="pay-card"><div class="amount">GHS 1,200</div><div class="lbl">Total Collected</div></div>
+      <div class="pay-card"><div class="amount" style="color:#e67e22;">GHS 350</div><div class="lbl">Pending</div></div>
+      <div class="pay-card"><div class="amount" style="color:#27ae60;">GHS 850</div><div class="lbl">Cleared Today</div></div>
+    </div>
+    <div class="table-buttons" style="margin-bottom:14px;">
+      <button onclick="openModal('payment')">+ Record Payment</button>
+    </div>
+    <div class="panel">
+      <table id="paymentsTable">
+        <tr><th>ID</th><th>Patient</th><th>Amount (GHS)</th><th>Date</th><th>Method</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice Mensah</td><td>500</td><td>2026-03-25</td><td>Cash</td><td><span class="badge badge-paid">Paid</span></td></tr>
+        <tr><td>2</td><td>Bob Asante</td><td>350</td><td>2026-03-26</td><td>MoMo</td><td><span class="badge badge-unpaid">Pending</span></td></tr>
+        <tr><td>3</td><td>Charlie Osei</td><td>350</td><td>2026-03-27</td><td>Card</td><td><span class="badge badge-paid">Paid</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('paymentsTable')">Print</button>
+        <button onclick="copyTableById('paymentsTable')">Copy</button>
+        <button onclick="exportCSVById('paymentsTable','payments.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div id="page-settings" class="page-section">
+    <div class="page-title">Profile Settings</div>
+    <div class="panel">
+      <h3>Account Information</h3>
+      <div style="margin-top:12px;" class="settings-form">
+        <div><label>First Name</label><input type="text" value="Mary"></div>
+        <div><label>Last Name</label><input type="text" value="Ofori"></div>
+        <div><label>Email</label><input type="email" value="receptionist@hospital.com"></div>
+        <div><label>Phone</label><input type="text" value="+233 201 000 003"></div>
+        <div><label>Department</label><input type="text" value="Front Desk" readonly style="background:#f5f5f5;"></div>
+        <div><label>Staff ID</label><input type="text" value="REC-001" readonly style="background:#f5f5f5;"></div>
+        <div class="full"><label>New Password</label><input type="password" placeholder="Enter new password"></div>
+        <div class="full"><label>Confirm Password</label><input type="password" placeholder="Confirm new password"></div>
+      </div>
+      <button class="btn-primary" onclick="alert('Settings saved!')">Save Changes</button>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+
+<!-- MODAL -->
+<div id="universalModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">New Entry</h3>
+    <div id="modalFields"></div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* NAV */
+function navigate(el, page) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+}
+
+/* AUTH */
+window.onload = function () {
+  const user = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+  if (!user || role !== 'receptionist') { window.location.href = 'HospitalLogin.html'; return; }
+  document.getElementById('userDisplay').textContent = user;
+  document.getElementById('sidebarName').textContent = user;
+  buildCharts();
+};
+
+function logout() {
+  localStorage.removeItem('username');
+  localStorage.removeItem('role');
+  window.location.href = 'HospitalLogin.html';
+}
+
+/* CLOCK */
+setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+/* CHARTS */
+function buildCharts() {
+  new Chart(document.getElementById('dashChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Done', 'Pending', 'Walk-in'],
+      datasets: [{ data: [2, 2, 1], backgroundColor: ['#27ae60', '#e67e22', '#9b59b6'] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+  new Chart(document.getElementById('apptChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      datasets: [{ label: 'Booked', data: [5, 4, 6, 3, 5], backgroundColor: '#9b59b6' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+}
+
+/* TABLE UTILS */
+function printTableById(id) {
+  const win = window.open('', '', 'height=600,width=800');
+  win.document.write('<html><head><title>Print</title><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px;font-size:13px}</style></head><body>' + document.getElementById(id).outerHTML + '</body></html>');
+  win.document.close(); win.print();
+}
+function copyTableById(id) {
+  const text = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => c.innerText).join('\t')).join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+}
+function exportCSVById(id, filename) {
+  const csv = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => '"' + c.innerText.replace(/"/g, '""') + '"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = filename; a.click();
+}
+
+/* MODAL */
+let currentModalType = '';
+let walkinCount = 2;
+
+const modalConfigs = {
+  appointment: {
+    title: 'Book Appointment',
+    fields: [
+      { label: 'Patient Name', id: 'mPatient', type: 'text', placeholder: 'Full name' },
+      { label: 'Doctor', id: 'mDoctor', type: 'select', options: ['Dr. Smith', 'Dr. Mensah'] },
+      { label: 'Date', id: 'mDate', type: 'date' },
+      { label: 'Time', id: 'mTime', type: 'time' },
+      { label: 'Status', id: 'mStatus', type: 'select', options: ['Pending', 'Done'] }
+    ]
+  },
+  patient: {
+    title: 'Register Patient',
+    fields: [
+      { label: 'Full Name', id: 'mName', type: 'text', placeholder: 'Full name' },
+      { label: 'Age', id: 'mAge', type: 'number', placeholder: 'Age' },
+      { label: 'Gender', id: 'mGender', type: 'select', options: ['Male', 'Female', 'Other'] },
+      { label: 'Phone', id: 'mPhone', type: 'text', placeholder: '+233 ...' }
+    ]
+  },
+  walkin: {
+    title: 'Register Walk-in',
+    fields: [
+      { label: 'Patient Name (optional)', id: 'mWName', type: 'text', placeholder: 'Name or leave blank' },
+      { label: 'Assigned Doctor', id: 'mWDoc', type: 'select', options: ['Dr. Smith', 'Dr. Mensah'] },
+      { label: 'Reason', id: 'mWReason', type: 'text', placeholder: 'Brief reason for visit' }
+    ]
+  },
+  payment: {
+    title: 'Record Payment',
+    fields: [
+      { label: 'Patient Name', id: 'mPayPat', type: 'text', placeholder: 'Patient name' },
+      { label: 'Amount (GHS)', id: 'mAmount', type: 'number', placeholder: '0.00' },
+      { label: 'Date', id: 'mPayDate', type: 'date' },
+      { label: 'Method', id: 'mMethod', type: 'select', options: ['Cash', 'MoMo', 'Card', 'Bank Transfer'] },
+      { label: 'Status', id: 'mPayStatus', type: 'select', options: ['Paid', 'Pending'] }
+    ]
+  }
+};
+
+function openModal(type) {
+  currentModalType = type;
+  const config = modalConfigs[type];
+  document.getElementById('modalTitle').textContent = config.title;
+  let html = '';
+  config.fields.forEach(f => {
+    html += `<label>${f.label}</label>`;
+    if (f.type === 'select') {
+      html += `<select id="${f.id}">` + f.options.map(o => `<option>${o}</option>`).join('') + `</select>`;
+    } else {
+      html += `<input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}">`;
+    }
+  });
+  document.getElementById('modalFields').innerHTML = html;
+  document.getElementById('universalModal').style.display = 'block';
+}
+
+function closeModal() { document.getElementById('universalModal').style.display = 'none'; }
+
+function saveModal() {
+  const config = modalConfigs[currentModalType];
+  const vals = {};
+  for (const f of config.fields) {
+    const el = document.getElementById(f.id);
+    // walk-in name is optional
+    if (!el || (!el.value.trim() && f.id !== 'mWName')) { alert('Please fill all required fields!'); return; }
+    vals[f.id] = el.value.trim();
+  }
+
+  if (currentModalType === 'appointment') {
+    const t = document.getElementById('apptTable');
+    const sc = vals.mStatus === 'Done' ? 'badge-done' : 'badge-pending';
+    const row = t.insertRow();
+    row.innerHTML = `<td>${t.rows.length - 1}</td><td>${vals.mPatient}</td><td>${vals.mDoctor}</td><td>${vals.mDate}</td><td>${vals.mTime}</td><td><span class="badge ${sc}">${vals.mStatus}</span></td>`;
+  } else if (currentModalType === 'patient') {
+    const t = document.getElementById('patientsTable');
+    const row = t.insertRow();
+    row.innerHTML = `<td>${t.rows.length - 1}</td><td>${vals.mName}</td><td>${vals.mAge}</td><td>${vals.mGender}</td><td>${vals.mPhone}</td><td><span class="badge badge-active">Active</span></td>`;
+  } else if (currentModalType === 'walkin') {
+    walkinCount++;
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const name = vals.mWName || `Walk-in #${walkinCount}`;
+    // Add card
+    const card = document.createElement('div');
+    card.className = 'walkin-card';
+    card.style.borderLeftColor = '#7b3fa0';
+    card.innerHTML = `<div class="wtime">Arrived: ${now}</div><div class="wname">${name}</div><div class="wdoc">Assigned to: ${vals.mWDoc}</div><div style="margin-top:8px;"><span class="badge badge-pending">Waiting</span></div>`;
+    document.getElementById('walkinCards').appendChild(card);
+    // Add table row
+    const t = document.getElementById('walkinTable');
+    const row = t.insertRow();
+    row.innerHTML = `<td>${walkinCount}</td><td>${name}</td><td>${now}</td><td>${vals.mWDoc}</td><td><span class="badge badge-pending">Waiting</span></td>`;
+  } else if (currentModalType === 'payment') {
+    const t = document.getElementById('paymentsTable');
+    const sc = vals.mPayStatus === 'Paid' ? 'badge-paid' : 'badge-unpaid';
+    const row = t.insertRow();
+    row.innerHTML = `<td>${t.rows.length - 1}</td><td>${vals.mPayPat}</td><td>${vals.mAmount}</td><td>${vals.mPayDate}</td><td>${vals.mMethod}</td><td><span class="badge ${sc}">${vals.mPayStatus}</span></td>`;
+  }
+  closeModal();
+}
+
+async function createAppointment(patientId, doctorId, date, time) {
+    try {
+        const res = await fetch('http://localhost:8080/api/appointments/create', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ patientId, doctorId, date, time })
+        });
+
+        if (!res.ok) throw new Error('Failed to create appointment');
+        const appointment = await res.json();
+        console.log('Appointment created:', appointment);
+        return appointment;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+// del appoint.
+async function deleteAppointment(appointmentId) {
+    try {
+        const res = await fetch(`http://localhost:8080/api/appointments/${appointmentId}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete appointment');
+        console.log('Appointment deleted:', appointmentId);
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+document.getElementById('universalModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

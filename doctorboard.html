@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital – Doctor Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary-dark: #0d6b4e;
+  --primary-mid:  #1a9e74;
+  --primary-light:#2dd4a0;
+  --pale:         #e8f8f2;
+  --white:        #ffffff;
+  --gray-1:       #f4fbf8;
+  --gray-2:       #d0e8de;
+  --gray-3:       #7aab97;
+  --text:         #0e2a20;
+  --sidebar-w:    230px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { font-family: 'Lato', sans-serif; background: var(--gray-1); overflow-x: hidden; }
+
+/* TOPBAR */
+.topbar {
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary-mid));
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 54px;
+  gap: 16px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+}
+
+.brand { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 17px; margin-right: auto; }
+
+.role-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.btn-logout {
+  background: #c0392b;
+  border: none;
+  padding: 7px 14px;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #0a4a36, #0d6b4e);
+  color: white;
+  padding: 0 10px 20px;
+  position: fixed;
+  top: 54px; left: 0;
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+}
+
+.doctor-box {
+  text-align: center;
+  padding: 24px 0 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 14px;
+}
+
+.doc-avatar {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.section-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  margin: 14px 4px 6px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.nav-item {
+  padding: 11px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  transition: background 0.2s;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.12); }
+.nav-item.active { background: rgba(255,255,255,0.22); font-weight: 700; }
+.nav-item i { width: 18px; text-align: center; opacity: 0.85; }
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  margin-top: 54px;
+  padding: 26px;
+  min-height: calc(100vh - 54px);
+}
+
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+.page-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+}
+
+/* STAT CARDS */
+.stat-row { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.stat-card {
+  flex: 1; min-width: 150px;
+  background: linear-gradient(135deg, var(--primary-mid), var(--primary-dark));
+  color: white;
+  padding: 20px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-card.orange { background: linear-gradient(135deg, #e67e22, #c0392b); }
+.stat-card.blue   { background: linear-gradient(135deg, #2980b9, #1a5fa8); }
+.stat-card.purple { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+
+.stat-card i {
+  font-size: 22px;
+  background: rgba(255,255,255,0.2);
+  padding: 11px;
+  border-radius: 10px;
+}
+
+.stat-card p { font-size: 12px; opacity: 0.88; }
+.stat-card h2 { font-size: 26px; font-weight: 800; }
+
+/* PANEL */
+.panel {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.panel h3 {
+  color: var(--primary-dark);
+  margin-bottom: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+}
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; }
+
+th, td {
+  padding: 10px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e6f0ea;
+  font-size: 13px;
+}
+
+th {
+  background: var(--pale);
+  font-weight: 700;
+  color: var(--primary-dark);
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+tr:hover td { background: #f0faf5; }
+
+.table-buttons { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+.table-buttons button {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary-mid);
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.table-buttons button:hover { background: var(--primary-dark); }
+
+/* BADGES */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-pending  { background: #fff3cd; color: #856404; }
+.badge-done     { background: #d1f0db; color: #155724; }
+.badge-active   { background: #d1f0db; color: #155724; }
+.badge-critical { background: #f8d7da; color: #721c24; }
+.badge-stable   { background: #cce5ff; color: #004085; }
+
+/* MODAL */
+.modal {
+  display: none; position: fixed; z-index: 2000;
+  left: 0; top: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white; width: 420px; max-width: 92%;
+  margin: 70px auto; padding: 24px;
+  border-radius: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.modal-content h3 { color: var(--primary-dark); margin-bottom: 4px; }
+
+.modal-content label {
+  font-weight: 700; font-size: 12px;
+  color: var(--text); margin-top: 4px;
+  display: block;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%; padding: 9px 10px;
+  border: 1px solid #ccc; border-radius: 7px;
+  font-size: 14px; font-family: 'Lato', sans-serif;
+}
+
+.modal-content textarea { resize: vertical; min-height: 80px; }
+
+.modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+.modal-buttons button { padding: 8px 18px; border: none; border-radius: 7px; cursor: pointer; font-size: 14px; }
+.btn-cancel { background: #eee; color: #555; }
+.btn-save   { background: var(--primary-mid); color: white; }
+.btn-save:hover { background: var(--primary-dark); }
+
+/* SCHEDULE */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.schedule-card {
+  background: var(--pale);
+  border-radius: 10px;
+  padding: 14px;
+  border-left: 4px solid var(--primary-mid);
+}
+
+.schedule-card .time { font-size: 13px; font-weight: 700; color: var(--primary-dark); }
+.schedule-card .patient-name { font-size: 15px; font-weight: 700; margin: 4px 0 2px; }
+.schedule-card .reason { font-size: 12px; color: #666; }
+
+/* PROFILE FORM */
+.settings-form {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 580px;
+}
+.settings-form label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px; color: var(--text); }
+.settings-form input, .settings-form select { width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 7px; font-size: 14px; }
+.settings-form .full { grid-column: 1 / -1; }
+.btn-primary { background: var(--primary-mid); color: white; border: none; padding: 10px 24px; border-radius: 7px; cursor: pointer; font-size: 14px; margin-top: 10px; }
+.btn-primary:hover { background: var(--primary-dark); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">🏥 Hospital Management</div>
+  <div id="clock" style="font-size:13px;opacity:0.8;"></div>
+  <span class="role-badge">DOCTOR</span>
+  <span style="font-size:13px;">Dr. <strong id="userDisplay"></strong></span>
+  <button class="btn-logout" onclick="logout()">Logout</button>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="doctor-box">
+    <div class="doc-avatar">👨‍⚕️</div>
+    <div style="font-weight:700;font-size:15px;" id="sidebarName">Doctor</div>
+    <div style="font-size:12px;opacity:0.6;margin-top:3px;">General Medicine</div>
+  </div>
+
+  <p class="section-label">MAIN</p>
+
+  <div class="nav-item active" onclick="navigate(this,'dashboard')">
+    <i class="fas fa-th-large"></i> Dashboard
+  </div>
+  <div class="nav-item" onclick="navigate(this,'patients')">
+    <i class="fas fa-procedures"></i> My Patients
+  </div>
+  <div class="nav-item" onclick="navigate(this,'appointments')">
+    <i class="fas fa-calendar-alt"></i> Appointments
+  </div>
+  <div class="nav-item" onclick="navigate(this,'records')">
+    <i class="fas fa-file-medical"></i> Medical Records
+  </div>
+  <div class="nav-item" onclick="navigate(this,'schedule')">
+    <i class="fas fa-clock"></i> My Schedule
+  </div>
+
+  <p class="section-label">ACCOUNT</p>
+
+  <div class="nav-item" onclick="navigate(this,'settings')">
+    <i class="fas fa-user-cog"></i> Profile Settings
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="page-dashboard" class="page-section active">
+    <div class="page-title">Doctor Dashboard</div>
+    <div class="stat-row">
+      <div class="stat-card">
+        <i class="fas fa-procedures"></i>
+        <div><p>My Patients</p><h2>4</h2></div>
+      </div>
+      <div class="stat-card orange">
+        <i class="fas fa-calendar-check"></i>
+        <div><p>Today's Appointments</p><h2>3</h2></div>
+      </div>
+      <div class="stat-card blue">
+        <i class="fas fa-heartbeat"></i>
+        <div><p>Critical Cases</p><h2>1</h2></div>
+      </div>
+      <div class="stat-card purple">
+        <i class="fas fa-file-medical"></i>
+        <div><p>Records Written</p><h2>12</h2></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <div class="panel" style="flex:1;min-width:280px;">
+        <h3>Today's Appointments</h3>
+        <table>
+          <tr><th>Time</th><th>Patient</th><th>Reason</th><th>Status</th></tr>
+          <tr><td>09:00 AM</td><td>Alice Mensah</td><td>Chest pain</td><td><span class="badge badge-done">Done</span></td></tr>
+          <tr><td>10:30 AM</td><td>Bob Asante</td><td>Follow-up</td><td><span class="badge badge-done">Done</span></td></tr>
+          <tr><td>12:00 PM</td><td>Charlie Osei</td><td>Consultation</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        </table>
+      </div>
+
+      <div class="panel" style="flex:1;min-width:260px;">
+        <h3>Patient Status Overview</h3>
+        <canvas id="statusChart" height="160"></canvas>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Recent Medical Records</h3>
+      <table>
+        <tr><th>Patient</th><th>Diagnosis</th><th>Date</th><th>Status</th></tr>
+        <tr><td>Alice Mensah</td><td>Hypertension</td><td>2026-03-27</td><td><span class="badge badge-stable">Stable</span></td></tr>
+        <tr><td>Bob Asante</td><td>Diabetes Type 2</td><td>2026-03-26</td><td><span class="badge badge-stable">Stable</span></td></tr>
+        <tr><td>Charlie Osei</td><td>Pneumonia</td><td>2026-03-25</td><td><span class="badge badge-critical">Critical</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== MY PATIENTS ===== -->
+  <div id="page-patients" class="page-section">
+    <div class="page-title">My Patients</div>
+    <div class="table-buttons" style="margin-bottom:14px;">
+      <button onclick="openModal('patient')">+ Add Patient</button>
+    </div>
+    <div class="panel">
+      <table id="patientsTable">
+        <tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Diagnosis</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice Mensah</td><td>34</td><td>Female</td><td>Hypertension</td><td><span class="badge badge-stable">Stable</span></td></tr>
+        <tr><td>2</td><td>Bob Asante</td><td>50</td><td>Male</td><td>Diabetes Type 2</td><td><span class="badge badge-stable">Stable</span></td></tr>
+        <tr><td>3</td><td>Charlie Osei</td><td>29</td><td>Male</td><td>Pneumonia</td><td><span class="badge badge-critical">Critical</span></td></tr>
+        <tr><td>4</td><td>Eve Darko</td><td>41</td><td>Female</td><td>Migraine</td><td><span class="badge badge-stable">Stable</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('patientsTable')">Print</button>
+        <button onclick="copyTableById('patientsTable')">Copy</button>
+        <button onclick="exportCSVById('patientsTable','my-patients.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== APPOINTMENTS ===== -->
+  <div id="page-appointments" class="page-section">
+    <div class="page-title">Appointments</div>
+    <div class="panel">
+      <table id="apptTable">
+        <tr><th>ID</th><th>Patient</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice Mensah</td><td>2026-03-29</td><td>09:00 AM</td><td>Chest pain</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>2</td><td>Bob Asante</td><td>2026-03-29</td><td>10:30 AM</td><td>Follow-up</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>3</td><td>Charlie Osei</td><td>2026-03-29</td><td>12:00 PM</td><td>Consultation</td><td><span class="badge badge-pending">Pending</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('apptTable')">Print</button>
+        <button onclick="copyTableById('apptTable')">Copy</button>
+        <button onclick="exportCSVById('apptTable','appointments.csv')">Export CSV</button>
+        <button onclick="openModal('appointment')">+ Add Appointment</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Appointments This Week</h3>
+      <canvas id="apptChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- ===== MEDICAL RECORDS ===== -->
+  <div id="page-records" class="page-section">
+    <div class="page-title">Medical Records</div>
+    <div class="table-buttons" style="margin-bottom:14px;">
+      <button onclick="openModal('record')">+ New Record</button>
+    </div>
+    <div class="panel">
+      <table id="recordsTable">
+        <tr><th>ID</th><th>Patient</th><th>Diagnosis</th><th>Prescription</th><th>Date</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice Mensah</td><td>Hypertension</td><td>Amlodipine 5mg</td><td>2026-03-27</td><td><span class="badge badge-stable">Stable</span></td></tr>
+        <tr><td>2</td><td>Bob Asante</td><td>Diabetes Type 2</td><td>Metformin 500mg</td><td>2026-03-26</td><td><span class="badge badge-stable">Stable</span></td></tr>
+        <tr><td>3</td><td>Charlie Osei</td><td>Pneumonia</td><td>Amoxicillin 500mg</td><td>2026-03-25</td><td><span class="badge badge-critical">Critical</span></td></tr>
+        <tr><td>4</td><td>Eve Darko</td><td>Migraine</td><td>Sumatriptan 50mg</td><td>2026-03-24</td><td><span class="badge badge-stable">Stable</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('recordsTable')">Print</button>
+        <button onclick="copyTableById('recordsTable')">Copy</button>
+        <button onclick="exportCSVById('recordsTable','medical-records.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCHEDULE ===== -->
+  <div id="page-schedule" class="page-section">
+    <div class="page-title">My Schedule — Today</div>
+    <div class="schedule-grid">
+      <div class="schedule-card">
+        <div class="time">09:00 AM</div>
+        <div class="patient-name">Alice Mensah</div>
+        <div class="reason">Chest pain check-up</div>
+        <div style="margin-top:8px;"><span class="badge badge-done">Completed</span></div>
+      </div>
+      <div class="schedule-card">
+        <div class="time">10:30 AM</div>
+        <div class="patient-name">Bob Asante</div>
+        <div class="reason">Diabetes follow-up</div>
+        <div style="margin-top:8px;"><span class="badge badge-done">Completed</span></div>
+      </div>
+      <div class="schedule-card" style="border-left-color:#e67e22;">
+        <div class="time">12:00 PM</div>
+        <div class="patient-name">Charlie Osei</div>
+        <div class="reason">Pneumonia consultation</div>
+        <div style="margin-top:8px;"><span class="badge badge-pending">Pending</span></div>
+      </div>
+      <div class="schedule-card" style="border-left-color:#8e44ad;">
+        <div class="time">02:30 PM</div>
+        <div class="patient-name">Eve Darko</div>
+        <div class="reason">Migraine evaluation</div>
+        <div style="margin-top:8px;"><span class="badge badge-pending">Pending</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div id="page-settings" class="page-section">
+    <div class="page-title">Profile Settings</div>
+    <div class="panel">
+      <h3>Doctor Account</h3>
+      <div style="margin-top:12px;" class="settings-form">
+        <div><label>First Name</label><input type="text" value="John"></div>
+        <div><label>Last Name</label><input type="text" value="Smith"></div>
+        <div><label>Email</label><input type="email" value="doctor1@hospital.com"></div>
+        <div><label>Phone</label><input type="text" value="+233 201 000 001"></div>
+        <div><label>Specialty</label><input type="text" value="General Medicine"></div>
+        <div><label>License No.</label><input type="text" value="GH-DOC-0001" readonly style="background:#f5f5f5;"></div>
+        <div class="full"><label>New Password</label><input type="password" placeholder="Enter new password"></div>
+        <div class="full"><label>Confirm Password</label><input type="password" placeholder="Confirm new password"></div>
+      </div>
+      <button class="btn-primary" onclick="alert('Settings saved!')">Save Changes</button>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+
+<!-- MODAL -->
+<div id="universalModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">New Entry</h3>
+    <div id="modalFields"></div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* NAV */
+function navigate(el, page) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+}
+
+/* AUTH */
+window.onload = function () {
+  const user = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+  if (!user || role !== 'doctor') { window.location.href = 'HospitalLogin.html'; return; }
+  document.getElementById('userDisplay').textContent = user;
+  document.getElementById('sidebarName').textContent = 'Dr. ' + user;
+  buildCharts();
+};
+
+function logout() {
+  localStorage.removeItem('username');
+  localStorage.removeItem('role');
+  window.location.href = 'HospitalLogin.html';
+}
+
+/* CLOCK */
+setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+/* CHARTS */
+function buildCharts() {
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Stable', 'Critical', 'Recovered'],
+      datasets: [{ data: [3, 1, 0], backgroundColor: ['#1a9e74', '#e74c3c', '#3498db'] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+  new Chart(document.getElementById('apptChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      datasets: [{ label: 'Appointments', data: [4, 3, 5, 2, 3], backgroundColor: '#1a9e74' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+}
+
+/* TABLE UTILS */
+function printTableById(id) {
+  const win = window.open('', '', 'height=600,width=800');
+  win.document.write('<html><head><title>Print</title><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px;font-size:13px}</style></head><body>' + document.getElementById(id).outerHTML + '</body></html>');
+  win.document.close(); win.print();
+}
+function copyTableById(id) {
+  const text = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => c.innerText).join('\t')).join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+}
+function exportCSVById(id, filename) {
+  const csv = Array.from(document.querySelectorAll('#' + id + ' tr')).map(r => Array.from(r.cells).map(c => '"' + c.innerText.replace(/"/g, '""') + '"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = filename; a.click();
+}
+
+/* MODAL */
+let currentModalType = '';
+const modalConfigs = {
+  patient: {
+    title: 'Add Patient',
+    fields: [
+      { label: 'Patient Name', id: 'mName', type: 'text', placeholder: 'Full name' },
+      { label: 'Age', id: 'mAge', type: 'number', placeholder: 'Age' },
+      { label: 'Gender', id: 'mGender', type: 'select', options: ['Male', 'Female', 'Other'] },
+      { label: 'Diagnosis', id: 'mDiag', type: 'text', placeholder: 'Primary diagnosis' },
+      { label: 'Status', id: 'mStatus', type: 'select', options: ['Stable', 'Critical'] }
+    ]
+  },
+  appointment: {
+    title: 'Add Appointment',
+    fields: [
+      { label: 'Patient Name', id: 'mPatient', type: 'text', placeholder: 'Patient name' },
+      { label: 'Date', id: 'mDate', type: 'date' },
+      { label: 'Time', id: 'mTime', type: 'time' },
+      { label: 'Reason', id: 'mReason', type: 'text', placeholder: 'Reason for visit' },
+      { label: 'Status', id: 'mAStatus', type: 'select', options: ['Pending', 'Done'] }
+    ]
+  },
+  record: {
+    title: 'New Medical Record',
+    fields: [
+      { label: 'Patient Name', id: 'mRPatient', type: 'text', placeholder: 'Patient name' },
+      { label: 'Diagnosis', id: 'mRDiag', type: 'text', placeholder: 'Diagnosis' },
+      { label: 'Prescription', id: 'mRPres', type: 'text', placeholder: 'Medication & dosage' },
+      { label: 'Date', id: 'mRDate', type: 'date' },
+      { label: 'Notes', id: 'mRNotes', type: 'textarea', placeholder: 'Additional notes...' },
+      { label: 'Status', id: 'mRStatus', type: 'select', options: ['Stable', 'Critical'] }
+    ]
+  }
+};
+
+function openModal(type) {
+  currentModalType = type;
+  const config = modalConfigs[type];
+  document.getElementById('modalTitle').textContent = config.title;
+  let html = '';
+  config.fields.forEach(f => {
+    html += `<label>${f.label}</label>`;
+    if (f.type === 'select') {
+      html += `<select id="${f.id}">` + f.options.map(o => `<option>${o}</option>`).join('') + `</select>`;
+    } else if (f.type === 'textarea') {
+      html += `<textarea id="${f.id}" placeholder="${f.placeholder || ''}"></textarea>`;
+    } else {
+      html += `<input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}">`;
+    }
+  });
+  document.getElementById('modalFields').innerHTML = html;
+  document.getElementById('universalModal').style.display = 'block';
+}
+
+function closeModal() { document.getElementById('universalModal').style.display = 'none'; }
+
+function saveModal() {
+  const config = modalConfigs[currentModalType];
+  const vals = {};
+  for (const f of config.fields) {
+    const el = document.getElementById(f.id);
+    if (!el || !el.value.trim()) { alert('All fields are required!'); return; }
+    vals[f.id] = el.value.trim();
+  }
+
+  if (currentModalType === 'patient') {
+    const t = document.getElementById('patientsTable');
+    const id = t.rows.length;
+    const sc = vals.mStatus === 'Critical' ? 'badge-critical' : 'badge-stable';
+    const row = t.insertRow();
+    row.innerHTML = `<td>${id}</td><td>${vals.mName}</td><td>${vals.mAge}</td><td>${vals.mGender}</td><td>${vals.mDiag}</td><td><span class="badge ${sc}">${vals.mStatus}</span></td>`;
+  } else if (currentModalType === 'appointment') {
+    const t = document.getElementById('apptTable');
+    const id = t.rows.length;
+    const sc = vals.mAStatus === 'Done' ? 'badge-done' : 'badge-pending';
+    const row = t.insertRow();
+    row.innerHTML = `<td>${id}</td><td>${vals.mPatient}</td><td>${vals.mDate}</td><td>${vals.mTime}</td><td>${vals.mReason}</td><td><span class="badge ${sc}">${vals.mAStatus}</span></td>`;
+  } else if (currentModalType === 'record') {
+    const t = document.getElementById('recordsTable');
+    const id = t.rows.length;
+    const sc = vals.mRStatus === 'Critical' ? 'badge-critical' : 'badge-stable';
+    const row = t.insertRow();
+    row.innerHTML = `<td>${id}</td><td>${vals.mRPatient}</td><td>${vals.mRDiag}</td><td>${vals.mRPres}</td><td>${vals.mRDate}</td><td><span class="badge ${sc}">${vals.mRStatus}</span></td>`;
+  }
+  closeModal();
+}
+
+// get appoint.
+async function getDoctorAppointments(doctorId) {
+    try {
+        const res = await fetch(`http://localhost:8080/api/appointments/doctor/${doctorId}`);
+        const appointments = await res.json();
+        console.log(`Appointments for doctor ${doctorId}:`, appointments);
+        return appointments;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+// update appoint. status
+async function updateAppointmentStatus(appointmentId, status) {
+    try {
+        const res = await fetch(`http://localhost:8080/api/appointments/status/${appointmentId}?status=${status}`, {
+            method: 'PATCH'
+        });
+        if (!res.ok) throw new Error('Failed to update status');
+        const updated = await res.json();
+        console.log('Updated appointment:', updated);
+        return updated;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+// add accept or reject buttons
+
+
+document.getElementById('universalModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

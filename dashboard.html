@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Management System – Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --blue-dark: #1a5fa8;
+  --blue-mid: #2979c8;
+  --blue-light:#4db6f5;
+  --blue-pale: #e8f4fd;
+  --accent: #0ec2d4;
+  --green: #27ae60;
+  --orange: #e67e22;
+  --white: #ffffff;
+  --gray-1: #f4f8fc;
+  --gray-2: #d0dce9;
+  --gray-3: #8fa6bf;
+  --text: #1c2d3f;
+  --sidebar-w: 220px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--gray-1);
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* TOPBAR */
+.topbar {
+  background: linear-gradient(90deg, var(--blue-dark), var(--blue-mid));
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 52px;
+  gap: 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.brand {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  margin-right: auto;
+}
+
+.btn-logout {
+  background: #e74c3c;
+  border: none;
+  padding: 7px 14px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: 52px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #1a3a5c, #1a5fa8);
+  color: white;
+  padding: 0 10px 20px;
+  position: fixed;
+  top: 52px;
+  left: 0;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+}
+
+.admin-box {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-top: 30px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.section {
+  font-size: 11px;
+  color: #cbd6e2;
+  margin: 15px 0 5px;
+  letter-spacing: 1px;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  transition: background 0.2s;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.nav-item.active {
+  background: rgba(255,255,255,0.25);
+  font-weight: 600;
+}
+
+.nav-item i {
+  width: 18px;
+  text-align: center;
+}
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 25px;
+  width: calc(100% - var(--sidebar-w));
+  min-height: calc(100vh - 52px);
+}
+
+/* PAGE SECTIONS */
+.page-section {
+  display: none;
+}
+.page-section.active {
+  display: block;
+}
+
+/* CARDS */
+.stat-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 160px;
+  background: linear-gradient(135deg, var(--blue-mid), var(--blue-dark));
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.stat-card i {
+  font-size: 24px;
+  background: rgba(255,255,255,0.2);
+  padding: 12px;
+  border-radius: 10px;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid #e0e8f0;
+  font-size: 14px;
+}
+
+th {
+  background: var(--blue-pale);
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+tr:hover td {
+  background: #f0f7ff;
+}
+
+.table-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.table-buttons button {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 5px;
+  background: var(--blue-mid);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 13px;
+}
+
+.table-buttons button:hover {
+  background: var(--blue-dark);
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  width: 400px;
+  max-width: 90%;
+  margin: 80px auto;
+  padding: 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-content h3 {
+  color: var(--blue-dark);
+  margin-bottom: 4px;
+}
+
+.modal-content label {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  outline: none;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: var(--blue-mid);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.modal-buttons .btn-cancel {
+  background: #eee;
+  color: #555;
+}
+
+.modal-buttons .btn-save {
+  background: var(--blue-mid);
+  color: white;
+}
+
+.modal-buttons .btn-save:hover { background: var(--blue-dark); }
+
+/* PANEL */
+.panel {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+
+.panel h3 {
+  color: var(--blue-dark);
+  margin-bottom: 12px;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* PAGE TITLE */
+.page-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  margin-bottom: 20px;
+}
+
+/* BADGE */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-pending  { background: #fff3cd; color: #856404; }
+.badge-accepted { background: #d1f0db; color: #155724; }
+.badge-rejected { background: #f8d7da; color: #721c24; }
+
+/* DOCTORS / PATIENTS TABLE */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.info-card {
+  background: var(--blue-pale);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.info-card h4 {
+  color: var(--blue-dark);
+  margin-bottom: 6px;
+}
+
+.info-card p {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 3px;
+}
+
+/* PAYMENTS */
+.payment-summary {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pay-card {
+  flex: 1;
+  min-width: 140px;
+  background: white;
+  border: 1px solid var(--gray-2);
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.pay-card .amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--blue-dark);
+}
+
+.pay-card .label {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* PROFILE SETTINGS */
+.settings-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.settings-form label {
+  font-size: 13px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.settings-form input,
+.settings-form select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.settings-form .full {
+  grid-column: 1 / -1;
+}
+
+.btn-primary {
+  background: var(--blue-mid);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.btn-primary:hover { background: var(--blue-dark); }
+</style>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">🏥 Hospital Management</div>
+  <div id="clock" style="font-size:13px;opacity:0.85;"></div>
+  <div style="font-size:13px;">Welcome, <strong id="userDisplay">Admin</strong></div>
+  <button class="btn-logout" onclick="location.href='HospitalLogin.html'">Logout</button>
+</div>
+
+<!-- SIDEBAR -->
+<div class="layout">
+<div class="sidebar">
+  <div class="admin-box">
+    <div class="avatar"><i class="fas fa-user-shield"></i></div>
+    <h3 style="font-size:15px;">Admin</h3>
+    <p style="font-size:12px;opacity:0.7;">Admin ID: 2</p>
+  </div>
+
+  <p class="section">FEATURE</p>
+
+  <div class="nav-item active" onclick="navigate(this,'dashboard')">
+    <i class="fas fa-th-large"></i> Dashboard
+  </div>
+
+  <div class="nav-item" onclick="navigate(this,'doctors')">
+    <i class="fas fa-user-md"></i> Doctors
+  </div>
+
+  <div class="nav-item" onclick="navigate(this,'patients')">
+    <i class="fas fa-user"></i> Patients
+  </div>
+
+  <div class="nav-item" onclick="navigate(this,'appointments')">
+    <i class="fas fa-calendar"></i> Appointments
+  </div>
+
+  <div class="nav-item" onclick="navigate(this,'payments')">
+    <i class="fas fa-credit-card"></i> Payments
+  </div>
+
+  <p class="section">PROFILE</p>
+
+  <div class="nav-item" onclick="navigate(this,'settings')">
+    <i class="fas fa-cog"></i> Profile Settings
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <div id="page-dashboard" class="page-section active">
+    <div class="page-title">Dashboard Overview</div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <i class="fas fa-user-md"></i>
+        <div><p style="font-size:13px;opacity:0.85;">Total Doctors</p><h2>2</h2></div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-user"></i>
+        <div><p style="font-size:13px;opacity:0.85;">Total Patients</p><h2>4</h2></div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-heartbeat"></i>
+        <div><p style="font-size:13px;opacity:0.85;">Active Patients</p><h2>1</h2></div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,#27ae60,#1a7a45);">
+        <i class="fas fa-calendar-check"></i>
+        <div><p style="font-size:13px;opacity:0.85;">Today's Appointments</p><h2>1</h2></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Recent Appointments</h3>
+      <table>
+        <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr>
+        <tr><td>1</td><td>Test</td><td>Dr. Smith</td><td>2026-03-29</td><td><span class="badge badge-pending">Pending</span></td></tr>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h3>Patients per Date (Chart)</h3>
+      <canvas id="dashboardChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- ===================== DOCTORS ===================== -->
+  <div id="page-doctors" class="page-section">
+    <div class="page-title">Doctors</div>
+    <div class="table-buttons" style="margin-bottom:15px;">
+      <button onclick="openModal('doctor')">+ Add Doctor</button>
+    </div>
+    <div class="panel">
+      <table id="doctorsTable">
+        <tr><th>ID</th><th>Name</th><th>Specialty</th><th>Phone</th><th>Status</th></tr>
+        <tr><td>1</td><td>Dr. Smith</td><td>Cardiology</td><td>+233 201 000 001</td><td><span class="badge badge-accepted">Active</span></td></tr>
+        <tr><td>2</td><td>Dr. Mensah</td><td>General</td><td>+233 201 000 002</td><td><span class="badge badge-accepted">Active</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('doctorsTable')">Print</button>
+        <button onclick="copyTableById('doctorsTable')">Copy</button>
+        <button onclick="exportCSVById('doctorsTable','doctors.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PATIENTS ===================== -->
+  <div id="page-patients" class="page-section">
+    <div class="page-title">Patients</div>
+    <div class="table-buttons" style="margin-bottom:15px;">
+      <button onclick="openModal('patient')">+ Add Patient</button>
+    </div>
+    <div class="panel">
+      <table id="patientsTable">
+        <tr><th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice</td><td>32</td><td>Female</td><td>+233 201 111 001</td><td><span class="badge badge-accepted">Active</span></td></tr>
+        <tr><td>2</td><td>Bob</td><td>45</td><td>Male</td><td>+233 201 111 002</td><td><span class="badge badge-pending">Inactive</span></td></tr>
+        <tr><td>3</td><td>Charlie</td><td>28</td><td>Male</td><td>+233 201 111 003</td><td><span class="badge badge-pending">Inactive</span></td></tr>
+        <tr><td>4</td><td>Test</td><td>—</td><td>—</td><td>—</td><td><span class="badge badge-pending">Pending</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('patientsTable')">Print</button>
+        <button onclick="copyTableById('patientsTable')">Copy</button>
+        <button onclick="exportCSVById('patientsTable','patients.csv')">Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== APPOINTMENTS ===================== -->
+  <div id="page-appointments" class="page-section">
+    <div class="page-title">Appointments</div>
+    <div class="panel">
+      <table id="appointmentsTable">
+        <tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr>
+        <tr><td>1</td><td>Test</td><td>Dr. Smith</td><td>2026-03-29</td><td><span class="badge badge-pending">Pending</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('appointmentsTable')">Print</button>
+        <button onclick="copyTableById('appointmentsTable')">Copy</button>
+        <button onclick="exportCSVById('appointmentsTable','appointments.csv')">Export CSV</button>
+        <button onclick="scrollToChart()">Show Chart</button>
+        <button onclick="openModal('appointment')">+ Create New</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Appointments Chart</h3>
+      <canvas id="appointmentsChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- ===================== PAYMENTS ===================== -->
+  <div id="page-payments" class="page-section">
+    <div class="page-title">Payments</div>
+    <div class="payment-summary">
+      <div class="pay-card">
+        <div class="amount">GHS 1,200</div>
+        <div class="label">Total Collected</div>
+      </div>
+      <div class="pay-card">
+        <div class="amount" style="color:#e67e22;">GHS 350</div>
+        <div class="label">Pending</div>
+      </div>
+      <div class="pay-card">
+        <div class="amount" style="color:#27ae60;">GHS 850</div>
+        <div class="label">Cleared</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Payment Records</h3>
+      <table id="paymentsTable">
+        <tr><th>ID</th><th>Patient</th><th>Amount (GHS)</th><th>Date</th><th>Method</th><th>Status</th></tr>
+        <tr><td>1</td><td>Alice</td><td>500</td><td>2026-03-25</td><td>Cash</td><td><span class="badge badge-accepted">Paid</span></td></tr>
+        <tr><td>2</td><td>Bob</td><td>350</td><td>2026-03-26</td><td>MoMo</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        <tr><td>3</td><td>Charlie</td><td>350</td><td>2026-03-27</td><td>Card</td><td><span class="badge badge-accepted">Paid</span></td></tr>
+      </table>
+      <div class="table-buttons">
+        <button onclick="printTableById('paymentsTable')">Print</button>
+        <button onclick="copyTableById('paymentsTable')">Copy</button>
+        <button onclick="exportCSVById('paymentsTable','payments.csv')">Export CSV</button>
+        <button onclick="openModal('payment')">+ Add Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PROFILE SETTINGS ===================== -->
+  <div id="page-settings" class="page-section">
+    <div class="page-title">Profile Settings</div>
+    <div class="panel">
+      <h3>Account Information</h3>
+      <div style="margin-top:10px;" class="settings-form">
+        <div>
+          <label>First Name</label>
+          <input type="text" value="Admin">
+        </div>
+        <div>
+          <label>Last Name</label>
+          <input type="text" value="User">
+        </div>
+        <div>
+          <label>Email</label>
+          <input type="email" value="admin@hospital.com">
+        </div>
+        <div>
+          <label>Phone</label>
+          <input type="text" value="+233 201 000 000">
+        </div>
+        <div>
+          <label>Role</label>
+          <input type="text" value="Administrator" readonly style="background:#f5f5f5;">
+        </div>
+        <div>
+          <label>Admin ID</label>
+          <input type="text" value="2" readonly style="background:#f5f5f5;">
+        </div>
+        <div class="full">
+          <label>Change Password</label>
+          <input type="password" placeholder="Enter new password">
+        </div>
+        <div class="full">
+          <label>Confirm Password</label>
+          <input type="password" placeholder="Confirm new password">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="alert('Settings saved!')">Save Changes</button>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+</div><!-- /.layout -->
+
+<!-- ===================== UNIVERSAL MODAL ===================== -->
+<div id="universalModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Create New</h3>
+    <div id="modalFields"></div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody id="appointmentsTable"></tbody>
+</table>
+
+<script>
+/* ──────────────── NAVIGATION ──────────────── */
+function navigate(el, page) {
+  // Update active nav item
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+
+  // Show correct page section
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+}
+
+/* ──────────────── CLOCK ──────────────── */
+setInterval(() => {
+  document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+}, 1000);
+
+/* ──────────────── LOGIN CHECK ──────────────── */
+window.onload = function () {
+  const user = localStorage.getItem('username') || 'Admin';
+  document.getElementById('userDisplay').textContent = user;
+
+  buildDashboardChart();
+  buildAppointmentsChart();
+};
+
+/* ──────────────── APPOINTMENTS DATA ──────────────── */
+let appointments = [
+  { date: '2026-03-25', patient: 'Alice' },
+  { date: '2026-03-25', patient: 'Bob' },
+  { date: '2026-03-26', patient: 'Charlie' },
+  { date: '2026-03-27', patient: 'David' },
+  { date: '2026-03-27', patient: 'Eve' },
+  { date: '2026-03-29', patient: 'Test' }
+];
+
+function getChartData() {
+  const counts = {};
+  appointments.forEach(a => { counts[a.date] = (counts[a.date] || 0) + 1; });
+  const labels = Object.keys(counts).sort();
+  return { labels, data: labels.map(d => counts[d]) };
+}
+
+let dashChart, apptChart;
+
+function buildDashboardChart() {
+  const cd = getChartData();
+  dashChart = new Chart(document.getElementById('dashboardChart'), {
+    type: 'bar',
+    data: {
+      labels: cd.labels,
+      datasets: [{ label: 'Patients', data: cd.data, backgroundColor: 'rgba(41,121,200,0.6)', borderColor: '#1a5fa8', borderWidth: 1 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+}
+
+function buildAppointmentsChart() {
+  const cd = getChartData();
+  apptChart = new Chart(document.getElementById('appointmentsChart'), {
+    type: 'line',
+    data: {
+      labels: cd.labels,
+      datasets: [{ label: 'Patients', data: cd.data, borderColor: 'rgba(41,121,200,1)', backgroundColor: 'rgba(41,121,200,0.15)', fill: true, tension: 0.3 }]
+    },
+    options: { responsive: true, plugins: { title: { display: true, text: 'Patients per Date' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+}
+
+function refreshCharts() {
+  const cd = getChartData();
+  [dashChart, apptChart].forEach(chart => {
+    if (!chart) return;
+    chart.data.labels = cd.labels;
+    chart.data.datasets[0].data = cd.data;
+    chart.update();
+  });
+}
+
+function scrollToChart() {
+  document.getElementById('appointmentsChart').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ──────────────── TABLE UTILITIES ──────────────── */
+function printTableById(id) {
+  const content = document.getElementById(id).outerHTML;
+  const win = window.open('', '', 'height=600,width=800');
+  win.document.write('<html><head><title>Print</title><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px}</style></head><body>' + content + '</body></html>');
+  win.document.close();
+  win.print();
+}
+
+function copyTableById(id) {
+  const text = Array.from(document.querySelectorAll('#' + id + ' tr'))
+    .map(row => Array.from(row.cells).map(c => c.innerText).join('\t'))
+    .join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('Table copied!'));
+}
+
+function exportCSVById(id, filename) {
+  const rows = document.querySelectorAll('#' + id + ' tr');
+  const csv = Array.from(rows).map(r => Array.from(r.cells).map(c => '"' + c.innerText.replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ──────────────── UNIVERSAL MODAL ──────────────── */
+let currentModalType = '';
+
+const modalConfigs = {
+  appointment: {
+    title: 'Create New Appointment',
+    fields: [
+      { label: 'Patient Name', id: 'mPatient', type: 'text', placeholder: 'Enter patient name' },
+      { label: 'Doctor', id: 'mDoctor', type: 'text', placeholder: 'Enter doctor name' },
+      { label: 'Date', id: 'mDate', type: 'date' },
+      { label: 'Status', id: 'mStatus', type: 'select', options: ['Pending', 'Accepted', 'Rejected'] }
+    ]
+  },
+  doctor: {
+    title: 'Add New Doctor',
+    fields: [
+      { label: 'Doctor Name', id: 'mDocName', type: 'text', placeholder: 'e.g. Dr. Ama Owusu' },
+      { label: 'Specialty', id: 'mSpec', type: 'text', placeholder: 'e.g. Cardiology' },
+      { label: 'Phone', id: 'mDocPhone', type: 'text', placeholder: '+233 ...' },
+      { label: 'Status', id: 'mDocStatus', type: 'select', options: ['Active', 'Inactive'] }
+    ]
+  },
+  patient: {
+    title: 'Add New Patient',
+    fields: [
+      { label: 'Patient Name', id: 'mPatName', type: 'text', placeholder: 'Full name' },
+      { label: 'Age', id: 'mAge', type: 'number', placeholder: 'Age' },
+      { label: 'Gender', id: 'mGender', type: 'select', options: ['Male', 'Female', 'Other'] },
+      { label: 'Phone', id: 'mPatPhone', type: 'text', placeholder: '+233 ...' }
+    ]
+  },
+  payment: {
+    title: 'Add Payment Record',
+    fields: [
+      { label: 'Patient Name', id: 'mPayPatient', type: 'text', placeholder: 'Patient name' },
+      { label: 'Amount (GHS)', id: 'mAmount', type: 'number', placeholder: '0.00' },
+      { label: 'Date', id: 'mPayDate', type: 'date' },
+      { label: 'Method', id: 'mMethod', type: 'select', options: ['Cash', 'MoMo', 'Card', 'Bank Transfer'] },
+      { label: 'Status', id: 'mPayStatus', type: 'select', options: ['Paid', 'Pending'] }
+    ]
+  }
+};
+
+function openModal(type) {
+  currentModalType = type;
+  const config = modalConfigs[type];
+  document.getElementById('modalTitle').textContent = config.title;
+
+  let html = '';
+  config.fields.forEach(f => {
+    html += `<label style="font-weight:600;font-size:13px;display:block;margin:8px 0 3px;">${f.label}</label>`;
+    if (f.type === 'select') {
+      html += `<select id="${f.id}" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;">`;
+      f.options.forEach(o => html += `<option>${o}</option>`);
+      html += `</select>`;
+    } else {
+      html += `<input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;">`;
+    }
+  });
+
+  document.getElementById('modalFields').innerHTML = html;
+  document.getElementById('universalModal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('universalModal').style.display = 'none';
+}
+
+function saveModal() {
+  const type = currentModalType;
+  const config = modalConfigs[type];
+
+  // Collect values
+  const vals = {};
+  for (const f of config.fields) {
+    const el = document.getElementById(f.id);
+    if (!el || !el.value.trim()) { alert('All fields are required!'); return; }
+    vals[f.id] = el.value.trim();
+  }
+
+  // Insert into corresponding table
+  if (type === 'appointment') {
+    const table = document.getElementById('appointmentsTable');
+    const id = table.rows.length;
+    const row = table.insertRow();
+    const statusClass = vals.mStatus === 'Accepted' ? 'badge-accepted' : vals.mStatus === 'Rejected' ? 'badge-rejected' : 'badge-pending';
+    row.innerHTML = `<td>${id}</td><td>${vals.mPatient}</td><td>${vals.mDoctor}</td><td>${vals.mDate}</td><td><span class="badge ${statusClass}">${vals.mStatus}</span></td>`;
+    appointments.push({ date: vals.mDate, patient: vals.mPatient });
+    refreshCharts();
+  }
+  else if (type === 'doctor') {
+    const table = document.getElementById('doctorsTable');
+    const id = table.rows.length;
+    const row = table.insertRow();
+    const statusClass = vals.mDocStatus === 'Active' ? 'badge-accepted' : 'badge-pending';
+    row.innerHTML = `<td>${id}</td><td>${vals.mDocName}</td><td>${vals.mSpec}</td><td>${vals.mDocPhone}</td><td><span class="badge ${statusClass}">${vals.mDocStatus}</span></td>`;
+  }
+  else if (type === 'patient') {
+    const table = document.getElementById('patientsTable');
+    const id = table.rows.length;
+    const row = table.insertRow();
+    row.innerHTML = `<td>${id}</td><td>${vals.mPatName}</td><td>${vals.mAge}</td><td>${vals.mGender}</td><td>${vals.mPatPhone}</td><td><span class="badge badge-pending">Active</span></td>`;
+  }
+  else if (type === 'payment') {
+    const table = document.getElementById('paymentsTable');
+    const id = table.rows.length;
+    const row = table.insertRow();
+    const statusClass = vals.mPayStatus === 'Paid' ? 'badge-accepted' : 'badge-pending';
+    row.innerHTML = `<td>${id}</td><td>${vals.mPayPatient}</td><td>${vals.mAmount}</td><td>${vals.mPayDate}</td><td>${vals.mMethod}</td><td><span class="badge ${statusClass}">${vals.mPayStatus}</span></td>`;
+  }
+
+  closeModal();
+}
+
+async function getAllAppointments() {
+    try {
+        const res = await fetch('http://localhost:8080/api/appointments/all');
+        const appointments = await res.json();
+
+        const table = document.getElementById("appointmentsTable");
+        table.innerHTML = "";
+
+        appointments.forEach(app => {
+            const row = `
+                <tr>
+                    <td>${app.patientId}</td>
+                    <td>${app.doctorId}</td>
+                    <td>${app.date}</td>
+                    <td>${app.time}</td>
+                    <td>${app.status}</td>
+                </tr>
+            `;
+            table.innerHTML += row;
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// update appoint. status
+async function updateAppointmentStatus(appointmentId, status) {
+    try {
+        const res = await fetch(`http://localhost:8080/api/appointments/status/${appointmentId}?status=${status}`, {
+            method: 'PATCH'
+        });
+        if (!res.ok) throw new Error('Failed to update status');
+        const updated = await res.json();
+        console.log('Updated appointment:', updated);
+        return updated;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+// del appoint.
+async function deleteAppointment(appointmentId) {
+    try {
+        const res = await fetch(`http://localhost:8080/api/appointments/${appointmentId}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete appointment');
+        console.log('Appointment deleted:', appointmentId);
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+const user = JSON.parse(localStorage.getItem('currentUser'));
+
+if(user.role === 'DOCTOR') {
+    getDoctorAppointments(user.id);
+}
+
+// Close modal on backdrop click
+document.getElementById('universalModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+
+</body>
+</html>
